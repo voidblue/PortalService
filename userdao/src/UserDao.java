@@ -1,14 +1,6 @@
 import java.sql.*;
 
-public class UserDao {
-    private Connection getConnection() throws ClassNotFoundException, SQLException {
-        Class.forName("com.mysql.jdbc.Driver");
-
-        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/jejuuniv?characterEncoding=utf-8" ,
-                "root", "456111");
-
-        return connection;
-    }
+public abstract class UserDao {
 
 
     public User get(int id) throws ClassNotFoundException, SQLException {
@@ -56,4 +48,17 @@ public class UserDao {
 
         return id;
     }
+
+    public abstract Connection getConnection() throws ClassNotFoundException, SQLException ;
+//    {
+//        Class.forName("com.mys1ql.jdbc.111Driver");
+//
+//        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/jejuuniv?characterEncoding=utf-8" ,
+//                "root", "456111");
+//
+//        return connection;
+//    }
+
 }
+
+
