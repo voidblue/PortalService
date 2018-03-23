@@ -1,10 +1,19 @@
 import java.sql.*;
 
-public abstract class UserDao {
+public class UserDao {
+    //이 코드 떄문에 한라 코드를 어떻게 해야할지 ?? dependancy 생김
+    //Dependancy Injection, connectionMaker으로 생기는 의존성을 클라이언트 한테 넘김, 클라이언트(test에서) DaoFactory에게 다시 넘김
+    //스프링은 이 DaoFactory와 같은 역할을 해줌
+    private final ConnectionMaker connectionMaker;
 
+    public UserDao(ConnectionMaker connectionMaker) {
+        this.connectionMaker = connectionMaker;
+    }
 
+    //변경이 되지 않은 부분을 Context <-- 변하지 않은 부분을 묶어놓은 부분, 및 그 환경
+    //아래 get함수는 Context라고 할 수 있다.
     public User get(int id) throws ClassNotFoundException, SQLException {
-        Connection connection = getConnection();
+        Connection connection = connectionMaker.getConnection();   //팩토리패턴 ??
 
         PreparedStatement preparedStatement=
                 connection.prepareStatement("select * from user where id =?");
@@ -22,13 +31,11 @@ public abstract class UserDao {
         preparedStatement.close();
         connection.close();
 
-
         return user;
     }
 
-
     public int insert(User user) throws ClassNotFoundException, SQLException {
-        Connection connection = getConnection();
+        Connection connection = connectionMaker.getConnection();
 
         PreparedStatement preparedStatement=
                 connection.prepareStatement("INSERT INTO user (name, password) VALUES (?, ?)");
@@ -48,16 +55,6 @@ public abstract class UserDao {
 
         return id;
     }
-
-    public abstract Connection getConnection() throws ClassNotFoundException, SQLException ;
-//    {
-//        Class.forName("com.mys1ql.jdbc.111Driver");
-//
-//        Connection connection = DriverManager.getConnection("jdbc:mysql://localhost/jejuuniv?characterEncoding=utf-8" ,
-//                "root", "456111");
-//
-//        return connection;
-//    }
 
 }
 
