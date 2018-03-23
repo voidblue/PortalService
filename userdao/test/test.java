@@ -7,13 +7,12 @@ import java.sql.SQLException;
 @SuppressWarnings("Duplicates")
 class test {
     private UserDao userDao;
-    //daoFactory가 스프링에서 해줘야할 역할을 해야함, 일단 DI의도에 맞게 싱글턴으로 구현
+    //daoFactory가 스프링에서 해줘야할 의존성 제거 역할을 해야함, 일단 DI의도에 맞게 싱글턴으로 구현
     private final DaoFatory daoFactory = DaoFatory.INSTANCE;
 
     @BeforeEach
     public void setup(){
         userDao = daoFactory.getUserDao();
-//        hallaUserDao = new HallaUserDao();
     }
 
     @Test
