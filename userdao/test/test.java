@@ -1,6 +1,7 @@
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.cache.support.NullValue;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
@@ -75,9 +76,11 @@ class test {
     @Test void delete() throws SQLException, ClassNotFoundException {
         User user = new User();
         Integer id = insertUserTest(user);
-        userDao.delete(user);
 
-        assertThat(userDao.get(id), nullValue());
+        userDao.delete(id);
+
+        User deletedUser = userDao.get(id);
+        assertThat(deletedUser, nullValue());
     }
 
 }

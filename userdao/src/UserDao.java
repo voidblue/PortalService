@@ -26,7 +26,7 @@ public class UserDao {
 
         ResultSet resultSet = null;
 
-        User user;
+        User user = null;
 
         try {
 
@@ -34,12 +34,12 @@ public class UserDao {
             preparedStatement = connection.prepareStatement("select * from user where id =?");
             preparedStatement.setInt(1, id);
             resultSet = preparedStatement.executeQuery();
-
-            user = new User();
-            resultSet.next();
-            user.setId(resultSet.getInt("id"));
-            user.setName(resultSet.getString("name"));
-            user.setPassword(resultSet.getString("password"));
+            if (resultSet.next()) {
+                user = new User();
+                user.setId(resultSet.getInt("id"));
+                user.setName(resultSet.getString("name"));
+                user.setPassword(resultSet.getString("password"));
+            }
         }finally {
             if (resultSet != null)
                 try {
@@ -141,7 +141,7 @@ public class UserDao {
         }
     }
 
-    public void delete(User user) throws SQLException {
+    public void delete(int id) throws SQLException {
         Connection connection = null ;
         PreparedStatement preparedStatement = null;
         try {
@@ -149,7 +149,7 @@ public class UserDao {
 
             preparedStatement =
                     connection.prepareStatement("DELETE FROM user WHERE id = ?");
-            preparedStatement.setInt(1, user.getId());
+            preparedStatement.setInt(1, id);
             preparedStatement.executeUpdate();
         }finally{
             try {
