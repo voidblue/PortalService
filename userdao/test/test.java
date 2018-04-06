@@ -1,18 +1,23 @@
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import static org.hamcrest.MatcherAssert.*;
-import static org.hamcrest.CoreMatchers.*;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+
 import java.sql.SQLException;
 
-@SuppressWarnings("Duplicates")
+import static org.hamcrest.CoreMatchers.is;
+import static org.hamcrest.CoreMatchers.nullValue;
+import static org.junit.Assert.assertThat;
+@SuppressWarnings("Duplicate")
 class test {
     private UserDao userDao;
-    //daoFactory가 스프링에서 해줘야할 의존성 제거 역할을 해야함, 일단 DI의도에 맞게 싱글턴으로 구현
-    private final DaoFatory daoFactory = DaoFatory.INSTANCE;
+    private DaoFatory daoFactory;
 
     @BeforeEach
     public void setup(){
-        userDao = daoFactory.getUserDao();
+        ApplicationContext applicationContext = new AnnotationConfigApplicationContext(DaoFatory.class);
+        userDao = applicationContext.getBean("userDao", UserDao.class);
     }
 
     @Test
@@ -41,6 +46,38 @@ class test {
         assertThat(insertedUser.getId(), is(id));
         assertThat(insertedUser.getName(), is(user.getName()));
         assertThat(insertedUser.getPassword(), is(user.getPassword()));
+    }
+
+    @Test
+    public void update() throws SQLException, ClassNotFoundException {
+        User user = new User();
+        user.setName("jaeyun2");
+        user.setPassword("12345");
+        int id = userDao.insert(user);
+        User insertedUser = userDao.get(id);
+
+        user.setName("김재윤");
+        user.setPassword("123456");
+        userDao.update(user);
+
+        User updatedUser = userDao.get(id);
+        assertThat(updatedUser.getId(), is(updatedUser.getId()));
+        assertThat(updatedUser.getName(), is(updatedUser.getName()));
+        assertThat(updatedUser.getPassword(), is(updatedUser.getPassword()));
+    }
+
+    private Integer insertUserTest(User user) throws SQLException, ClassNotFoundException {
+        user.setName("bye");
+        user.setPassword("1234");
+        return userDao.insert(user);
+    }
+
+    @Test void delete() throws SQLException, ClassNotFoundException {
+        User user = new User();
+        Integer id = insertUserTest(user);
+        userDao.delete(user);
+
+        assertThat(userDao.get(id), nullValue());
     }
 
 }
