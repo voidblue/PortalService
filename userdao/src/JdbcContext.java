@@ -1,16 +1,12 @@
-import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
+import lombok.AllArgsConstructor;
+import lombok.Cleanup;
 
+import javax.sql.DataSource;
+import java.sql.*;
+@AllArgsConstructor
 public class JdbcContext {//클래스를 추상화 할 필요가 있어서 인터페이스 사용
     //함수를 추상회 할 필요가 있는경우 상속기판 template method사용
     final DataSource dataSource;
-
-    public JdbcContext(DataSource dataSource) {
-        this.dataSource = dataSource;
-    }
 
     void jdbcContext(StatementStrategy statementStrategy) throws SQLException {
         Connection connection = null;
@@ -39,46 +35,18 @@ public class JdbcContext {//클래스를 추상화 할 필요가 있어서 인�
     }
 
     int jdbcContextForInsert(StatementStrategy statementStrategy) throws SQLException {
-        Connection connection = null;
-
-        PreparedStatement preparedStatement = null;
-        ResultSet resultSet = null;
         Integer id = null;
-        try {
-            connection = dataSource.getConnection();
-            preparedStatement = statementStrategy.makeStatement(connection);
+        @Cleanup
+        Connection connection = dataSource.getConnection();
+        @Cleanup
+        PreparedStatement preparedStatement = statementStrategy.makeStatement(connection);
+        @Cleanup
+        ResultSet resultSet = preparedStatement.getGeneratedKeys();
 
-            preparedStatement.executeUpdate();
+        preparedStatement.executeUpdate();
+        resultSet.next();
+        id = resultSet.getInt(1);
 
-            resultSet = preparedStatement.getGeneratedKeys();
-            resultSet.next();
-
-            id = resultSet.getInt(1);
-        } finally {
-            try {
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                if (preparedStatement != null) {
-                    preparedStatement.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-
-            try {
-                if (resultSet != null) {
-                    resultSet.close();
-                }
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
-        }
         return id;
     }
 
@@ -123,5 +91,39 @@ public class JdbcContext {//클래스를 추상화 할 필요가 있어서 인�
                 }
         }
         return user;
+    }
+
+    public User queryForObject(String sql, Object[] params) throws SQLException {
+        StatementStrategy statementStrategy = (connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            for(int i = 0 ; i < params.length ; i++) {
+                preparedStatement.setObject(i+1, params[i]);
+            }
+            return preparedStatement;
+        });
+        return jdbcContextForGet(statementStrategy);
+    }
+
+    public int insert(String sql, Object[] params) throws SQLException {
+        StatementStrategy statementStrategy =  (connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
+            for(int i = 0 ; i < params.length ; i++) {
+                preparedStatement.setObject(i+1, params[i]);
+            }
+            return preparedStatement;
+        });
+        return jdbcContextForInsert(statementStrategy);
+    }
+
+    public void update(String sql, Object[] params) throws SQLException {
+        StatementStrategy statementStrategy = (connection -> {
+            PreparedStatement preparedStatement = connection.prepareStatement(sql);
+            for(int i = 0 ; i < params.length ; i++) {
+                preparedStatement.setObject(i+1, params[i]);
+            }
+            return preparedStatement;
+        });
+        jdbcContext(statementStrategy);
+
     }
 }
