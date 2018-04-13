@@ -31,9 +31,11 @@ public class UserDao {
         try {
 
             connection = dataSource.getConnection();   //팩토리 메소드 패턴 ??
-            preparedStatement = connection.prepareStatement("select * from user where id =?");
-            preparedStatement.setInt(1, id);
+            StatementStrategy statementStrategy = new GetUserStatementStrategy(id);
+            preparedStatement = statementStrategy.makeStatement(connection);
             resultSet = preparedStatement.executeQuery();
+
+
             if (resultSet.next()) {
                 user = new User();
                 user.setId(resultSet.getInt("id"));
@@ -72,9 +74,9 @@ public class UserDao {
         Integer id = null;
         try {
             connection = dataSource.getConnection();
-            preparedStatement = connection.prepareStatement("INSERT INTO user (name, password) VALUES (?, ?)");
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getPassword());
+            StatementStrategy statementStrategy = new InsertUserStatementStrategy(user);
+            preparedStatement = statementStrategy.makeStatement(connection);
+
             preparedStatement.executeUpdate();
 
             preparedStatement = connection.prepareStatement("select last_insert_id()");
@@ -116,11 +118,9 @@ public class UserDao {
         PreparedStatement preparedStatement = null;
         try {
             connection = dataSource.getConnection();
-            preparedStatement =
-                    connection.prepareStatement("UPDATE user SET name = ?, password = ?  WHERE id = ?");
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getPassword());
-            preparedStatement.setInt(3, user.getId());
+            StatementStrategy statementStrategy = new UpdateUserStatementStrategy(user);
+            preparedStatement = statementStrategy.makeStatement(connection);
+//            preparedStatement = getPreparedStatement(user, connection);
             preparedStatement.executeUpdate();
         }finally {
             try {
@@ -141,15 +141,16 @@ public class UserDao {
         }
     }
 
+
+
     public void delete(int id) throws SQLException {
         Connection connection = null ;
         PreparedStatement preparedStatement = null;
         try {
             connection = dataSource.getConnection();
 
-            preparedStatement =
-                    connection.prepareStatement("DELETE FROM user WHERE id = ?");
-            preparedStatement.setInt(1, id);
+            StatementStrategy statementStrategy = new DeleteUserStatementStrategy(id);
+            preparedStatement = statementStrategy.makeStatement(connection);
             preparedStatement.executeUpdate();
         }finally{
             try {
