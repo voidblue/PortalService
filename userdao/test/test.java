@@ -25,18 +25,16 @@ class test {
         User user = null;
         //내가 확신할 수 없는 에러는 throw로 해서 다음 사람이 처리할 수 있도록 할 것
         try {
-            user = userDao.get(1);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
+            user = userDao.get(97);
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        assertThat(user.getId(), is(1));
-        assertThat(user.getName(), is("jaeyun"));
-        assertThat(user.getPassword(), is("1234"));
+        assertThat(user.getId(), is(97));
+        assertThat(user.getName(), is("jaeyun2"));
+        assertThat(user.getPassword(), is("12345"));
     }
     @Test
-    public void addTest() throws SQLException, ClassNotFoundException {
+    public void addTest() throws SQLException {
         User user = new User();
         user.setName("jaeyun2");
         user.setPassword("12345");
@@ -66,13 +64,14 @@ class test {
         assertThat(updatedUser.getPassword(), is(updatedUser.getPassword()));
     }
 
-    private Integer insertUserTest(User user) throws SQLException, ClassNotFoundException {
+    private Integer insertUserTest(User user) throws SQLException {
         user.setName("bye");
         user.setPassword("1234");
         return userDao.insert(user);
     }
 
-    @Test void delete() throws SQLException, ClassNotFoundException {
+    @Test
+    void delete() throws SQLException {
         User user = new User();
         Integer id = insertUserTest(user);
 

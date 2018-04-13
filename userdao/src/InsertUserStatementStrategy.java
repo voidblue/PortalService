@@ -1,6 +1,7 @@
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 public class InsertUserStatementStrategy implements StatementStrategy {
     private User user;
@@ -10,7 +11,7 @@ public class InsertUserStatementStrategy implements StatementStrategy {
 
     @Override
     public PreparedStatement makeStatement(Connection connection) throws SQLException {
-        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO user (name, password) VALUES (?, ?)");
+        PreparedStatement preparedStatement = connection.prepareStatement("INSERT INTO user (name, password) VALUES (?, ?)", Statement.RETURN_GENERATED_KEYS);
         preparedStatement.setString(1, user.getName());
         preparedStatement.setString(2, user.getPassword());
         return preparedStatement;
