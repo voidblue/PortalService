@@ -24,15 +24,6 @@ public class UserTest {
     @Autowired
     private TestRestTemplate restTemplate;
     private static final String PATH = "/api/user";
-    @Before
-    public void setup(){
-
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Type","applicaion/json");
-
-    }
-
-
 
     @Test
     public void get(){

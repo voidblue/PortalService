@@ -7,15 +7,19 @@ import org.hibernate.boot.model.source.internal.hbm.ResultSetMappingBinder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-
+    private static final String IMAGE_PATH = System.getProperty("user.dir") + "/src/main/resources/static/api/user";
     @Autowired
     UserRepository userRepository;
 
@@ -30,21 +34,6 @@ public class UserController {
     public ResultMessage create(@RequestBody User user){
         System.out.println(user.toString() +"모델");
         userRepository.save(user);
-//                                ,@RequestParam MultipartFile profileImage){
-//        //TODO 토근 권한 점검
-//        String filename =  profileImage.getOriginalFilename();
-//        try {
-//            BufferedImage image= ImageIO.read(profileImage.getInputStream());
-//            Image imageForResize = image.getScaledInstance(100,100, Image.SCALE_SMOOTH);
-//            BufferedImage newImage = new BufferedImage(100, 100, BufferedImage.TYPE_INT_RGB);
-//            Graphics g = newImage.getGraphics();
-//            g.drawImage(imageForResize, 0, 0, null);
-//            g.dispose();
-//            //TODO 상대경로 어떻게 깔끔하게 하는 법??
-//            ImageIO.write(newImage,"jpg", new File(System.getProperty("user.dir") +"/src/main/resource/static" + filename));
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
 
         ResultMessage resultMessage = new ResultMessage();
         resultMessage.setResultCode(200);
@@ -66,6 +55,55 @@ public class UserController {
     public ResultMessage delete(@PathVariable String id){
         userRepository.deleteById(id);
 
+        ResultMessage resultMessage = new ResultMessage();
+        resultMessage.setResultCode(200);
+        resultMessage.setMessage("승인");
+        return resultMessage;
+    }
+
+    @PostMapping("/{id}/image")
+    public ResultMessage imgaeCreate(@RequestBody MultipartFile image, @PathVariable String id){
+        try {
+            image.transferTo(new File(IMAGE_PATH + "/" + id));
+        } catch (InvalidPathException e){
+            File imageDir = new File(IMAGE_PATH  +  "/" + id);
+            imageDir.mkdir();
+            try {
+                image.transferTo(new File(IMAGE_PATH + "/" + id + "/image"));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+        } catch (IOException e2) {
+            e2.printStackTrace();
+        }
+
+        ResultMessage resultMessage = new ResultMessage();
+        resultMessage.setResultCode(200);
+        resultMessage.setMessage("승인");
+        return resultMessage;
+    }
+
+    @PutMapping("/{id}/image")
+
+        //TODO 권한점검
+    public ResultMessage update(@RequestBody MultipartFile image, @PathVariable String id){
+        try {
+            image.transferTo(new File(IMAGE_PATH + "/" + id +  "/image"));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        ResultMessage resultMessage = new ResultMessage();
+        resultMessage.setResultCode(200);
+        resultMessage.setMessage("승인");
+        return resultMessage;
+    }
+
+    @DeleteMapping("/{id}/image")
+        //TODO 권한점검
+    public ResultMessage deleteImage(@PathVariable String id){
+        new File(IMAGE_PATH + "/" + id + "/image").delete();
         ResultMessage resultMessage = new ResultMessage();
         resultMessage.setResultCode(200);
         resultMessage.setMessage("승인");
