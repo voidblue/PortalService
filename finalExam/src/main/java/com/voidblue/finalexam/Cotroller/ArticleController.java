@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -22,5 +23,10 @@ public class ArticleController {
     @GetMapping("/{id}")
     public Optional<Article> get(@PathVariable Integer id){
         return articleRepository.findById(id);
+    }
+
+    @GetMapping("/list")
+    public List<Article> getList(){
+        return articleRepository.findAll();
     }
 }
