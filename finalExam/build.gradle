@@ -31,4 +31,6 @@ dependencies {
     runtime('mysql:mysql-connector-java')
     compileOnly('org.projectlombok:lombok')
     testCompile('org.springframework.boot:spring-boot-starter-test')
+//    compile 'org.springframework.security.oauth:spring-security-oauth2:2.2.2.RELEASE'
+
 }

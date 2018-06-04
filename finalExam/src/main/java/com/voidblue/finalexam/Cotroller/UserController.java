@@ -1,16 +1,13 @@
 package com.voidblue.finalexam.Cotroller;
 
-import com.voidblue.finalexam.Model.ResultMessage;
+import com.voidblue.finalexam.Utils.ResultMessageFactory;
+import com.voidblue.finalexam.Utils.ResultMessage;
 import com.voidblue.finalexam.Model.User;
 import com.voidblue.finalexam.Dao.UserRepository;
-import org.hibernate.boot.model.source.internal.hbm.ResultSetMappingBinder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.HttpRequest;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
@@ -38,27 +35,22 @@ public class UserController {
         ResultMessage resultMessage = new ResultMessage();
         resultMessage.setResultCode(200);
         resultMessage.setMessage("승인");
-        return resultMessage;
+        return  ResultMessageFactory.get200();
     }
 
     @PutMapping
     public ResultMessage update(@RequestBody User user){
         userRepository.save(user);
         //TODO 권한점검
-        ResultMessage resultMessage = new ResultMessage();
-        resultMessage.setResultCode(200);
-        resultMessage.setMessage("승인");
-        return resultMessage;
+        return ResultMessageFactory.get200();
     }
 
     @DeleteMapping("/{id}")
     public ResultMessage delete(@PathVariable String id){
         userRepository.deleteById(id);
 
-        ResultMessage resultMessage = new ResultMessage();
-        resultMessage.setResultCode(200);
-        resultMessage.setMessage("승인");
-        return resultMessage;
+
+        return ResultMessageFactory.get200();
     }
 
     @PostMapping("/{id}/image")
@@ -78,10 +70,8 @@ public class UserController {
             e2.printStackTrace();
         }
 
-        ResultMessage resultMessage = new ResultMessage();
-        resultMessage.setResultCode(200);
-        resultMessage.setMessage("승인");
-        return resultMessage;
+
+        return ResultMessageFactory.get200();
     }
 
     @PutMapping("/{id}/image")
@@ -94,19 +84,15 @@ public class UserController {
             e.printStackTrace();
         }
 
-        ResultMessage resultMessage = new ResultMessage();
-        resultMessage.setResultCode(200);
-        resultMessage.setMessage("승인");
-        return resultMessage;
+
+        return  ResultMessageFactory.get200();
     }
 
     @DeleteMapping("/{id}/image")
         //TODO 권한점검
     public ResultMessage deleteImage(@PathVariable String id){
         new File(IMAGE_PATH + "/" + id + "/image").delete();
-        ResultMessage resultMessage = new ResultMessage();
-        resultMessage.setResultCode(200);
-        resultMessage.setMessage("승인");
-        return resultMessage;
+
+        return  ResultMessageFactory.get200();
     }
 }

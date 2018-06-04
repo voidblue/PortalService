@@ -1,4 +1,4 @@
-package com.voidblue.finalexam.Model;
+package com.voidblue.finalexam.Utils;
 
 import lombok.Data;
 
