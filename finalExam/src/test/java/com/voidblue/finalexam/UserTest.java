@@ -42,12 +42,7 @@ public class UserTest {
     @Test
     public void create(){
         User userForCreate = getValidUser();
-        System.out.println(userForCreate.toMultiValueMap() + "테스트");
 
-        //TODO MulitValueMap말고 객체에서 바로 json으로 보내는 방법이 있을것 같은데 그냥 쓰면  적용이 안됨
-//        HttpHeaders headers = new HttpHeaders();
-//        headers.setContentType(MediaType.APPLICATION_JSON);
-//        HttpEntity request =  new HttpEntity(userForCreate.toMultiValueMap(), headers);
         ResultMessage resultMessage = restTemplate.postForObject(PATH + "/", userForCreate, ResultMessage.class);
         System.out.println(resultMessage.toString());
 
@@ -95,7 +90,6 @@ public class UserTest {
         user.setId("testid");
         user.setPassword("1234");
         user.setNickname("tester");
-        user.setImageUrl("/testImage.png");
         return user;
     }
 }

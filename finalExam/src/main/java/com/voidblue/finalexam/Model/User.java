@@ -16,18 +16,4 @@ public class User {
     private String id;
     private String password;
     private String nickname;
-    private String ImageUrl;
-
-
-    public MultiValueMap toMultiValueMap(){
-        MultiValueMap user = new LinkedMultiValueMap();
-        for(Field f : this.getClass().getDeclaredFields()){
-            try {
-                user.add(f.getName(), f.get(this));
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            }
-        }
-        return user;
-    }
 }
