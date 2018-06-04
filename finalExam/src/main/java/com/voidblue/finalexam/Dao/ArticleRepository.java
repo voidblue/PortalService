@@ -9,4 +9,5 @@ import java.util.Optional;
 @Repository
 public interface ArticleRepository extends JpaRepository<Article, Integer> {
     Optional<Article> findById(Integer id);
+    Article save(Article article);
 }
