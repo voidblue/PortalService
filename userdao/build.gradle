@@ -1,5 +1,8 @@
 apply plugin: 'java'
 
+//여기 있는 것들을 수행하는 부분이 plugin java에 다 들어가 있다...
+
+
 sourceCompatibility = 1.8
 
 ext.springVersion = '5.0.4.RELEASE'

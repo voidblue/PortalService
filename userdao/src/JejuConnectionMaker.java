@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.TimeZone;
 import java.util.concurrent.Executor;
+
 @Deprecated
 public class JejuConnectionMaker implements ConnectionMaker {
     @Value("${db.classname}")

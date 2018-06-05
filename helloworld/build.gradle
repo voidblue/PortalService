@@ -1,0 +1,27 @@
+group 'voidblue'
+version '1.0-SNAPSHOT'
+
+apply plugin: 'java'
+apply plugin: 'war'
+ext.springVersion = '5.0.4.RELEASE'
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    providedCompile 'javax.servlet:servlet-api:2.5'
+    compile 'mysql:mysql-connector-java:5.1.37'
+    compile "org.springframework:spring-context:${springVersion}"
+    compile "org.springframework:spring-beans:${springVersion}"
+    compile "org.springframework:spring-core:${springVersion}"
+    compile "org.springframework:spring-aop:${springVersion}"
+    compile "org.springframework:spring-expression:${springVersion}"
+    compile "org.springframework:spring-jdbc:${springVersion}"
+    compile "org.springframework:spring-tx:${springVersion}"
+    compile 'org.junit.jupiter:junit-jupiter-api'
+    compile 'junit:junit:4.12'
+    compile 'org.junit.jupiter:junit-jupiter-api:5.1.0'
+    compileOnly 'org.projectlombok:lombok:1.16.8'
+}

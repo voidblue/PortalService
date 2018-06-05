@@ -32,9 +32,6 @@ public class UserController {
         System.out.println(user.toString() +"모델");
         userRepository.save(user);
 
-        ResultMessage resultMessage = new ResultMessage();
-        resultMessage.setResultCode(200);
-        resultMessage.setMessage("승인");
         return  ResultMessageFactory.get200();
     }
 
@@ -75,7 +72,6 @@ public class UserController {
     }
 
     @PutMapping("/{id}/image")
-
         //TODO 권한점검
     public ResultMessage update(@RequestBody MultipartFile image, @PathVariable String id){
         try {
