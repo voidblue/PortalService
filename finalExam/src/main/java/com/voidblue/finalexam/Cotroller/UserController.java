@@ -53,12 +53,12 @@ public class UserController {
     @PostMapping("/{id}/image")
     public ResultMessage imgaeCreate(@RequestBody MultipartFile image, @PathVariable String id){
         try {
-            image.transferTo(new File(IMAGE_PATH + "/" + id));
+            image.transferTo(new File(IMAGE_PATH + "/" + id  + "/image.jpg"));
         } catch (InvalidPathException e){
-            File imageDir = new File(IMAGE_PATH  +  "/" + id);
+            File imageDir = new File(IMAGE_PATH  + "/" + id);
             imageDir.mkdir();
             try {
-                image.transferTo(new File(IMAGE_PATH + "/" + id + "/image"));
+                image.transferTo(new File(IMAGE_PATH  + "/" + id + "/image.jpg"));
             } catch (IOException e1) {
                 e1.printStackTrace();
             }

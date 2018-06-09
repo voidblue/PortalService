@@ -2,10 +2,11 @@ package com.voidblue.finalexam.Utils;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Getter;
 
-@AllArgsConstructor
+@Data
 public class ResultMessage {
-    private final Integer resultCode;
-    private final String message;
+    private Integer resultCode;
+    private String message;
 
 }

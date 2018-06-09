@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/login.css" />
+    <title>리뷰 쓰기</title>
+</head>
+<body>
+<section class="reviewform-wrap">
+    <!--TODO 토큰 추가-->
+    <div class="body">
+            <div  >아이디</div>
+            <input id = "id" type="text"></input>
+        <div class="text-area flex">
+            <div >패스워드</div>
+            <input id = "password" type="password" ></input>
+        </div>
+        <div class="text-area flex">
+            <div >패스워드확인</div>
+            <input id = "passwordAcception" type="password" ></input>
+        </div>
+        <div class="text-area flex">
+            <div >닉네임</div>
+            <input id = "nickname" type="text" name="title" ></input>
+        </div>
+    </div>
+    <form id = "signUpForm" class="form-url" action="#" method="POST" enctype="multipart/form-data">
+        <div >
+            <div >프로필사진</div>
+            <input id = "image" type="file" name="image" class="img left-space"></input>
+        </div>
+        <div>
+            <div>
+                <button id = "signUpSubmit" type="submit">회원가입</button>
+                <button >취소</button>
+            </div>
+        </div>
+    </form>
+</section>
+
+
+<script type="text/javascript" src="lib/jquery-3.3.1.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/signUp.js" charset="utf-8"></script>
+</body>
+</html>

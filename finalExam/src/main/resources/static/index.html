@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="kr">
+<head>
+  <meta charset="UTF-8">
+  <title>My Note</title>
+  <link rel="stylesheet" href="css/login.css">
+  <link rel="stylesheet" href="css/article.css">
+</head>
+<body>
+
+
+
+
+<!-- 배포용 태그 -->
+
+
+
+
+
+
+
+<div class="signUp" id="signUpForm">
+  <h1 class="signUpTitle">로그인</h1>
+  <input id = "id" type="text" class="signUpInput" placeholder="아이디" autofocus required>
+  <input id = "password" type="password" class="signUpInput" placeholder="비밀번호" required>
+  <input id = "loginSubmit"  value="로그인" class="signUpButton">
+  <a href="signUp.html">
+  <div id = "signUp"  class="signUpButton" href="signUp.html">회원가입</div>
+  </a>
+</div>
+
+<div class = "articleArea">
+  <div class="body">
+    <div class = "textbox" id = "title">제목</div>
+    <div class = "textbox" id = "author">작성자</div>
+    <div class = "textbox" id = "timeCreated">작성일</div>
+    <img src = "/api/article/id/image.jpg">
+    <div class = "textbox" id = "text">내용</div>
+  </div>
+</div>
+
+
+
+
+<script src="lib/jquery-3.3.1.min.js"></script>
+<script src="js/login.js"></script>
+</body>
+</html>
