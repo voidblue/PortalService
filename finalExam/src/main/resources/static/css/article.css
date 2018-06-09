@@ -8,6 +8,19 @@
     left: 400px;
     height : auto;
     width: 600px;
+    /*padding: 33px 25px 29px;*/
+    /*background: #FFFFFF;*/
+    /*border-bottom: 1px solid #C4C4C4;*/
+    /*border-radius: 5px;*/
+    /*-webkit-box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);*/
+    /*box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);*/
+}
+
+.article{
+    margin-bottom: 20px;
+    position : relative;
+    height: auto;
+    width: 600px;
     padding: 33px 25px 29px;
     background: #FFFFFF;
     border-bottom: 1px solid #C4C4C4;
@@ -67,18 +80,6 @@ input {
     -webkit-box-sizing: border-box;
     -moz-box-sizing: border-box;
     box-sizing: border-box;
-}
-.article {
-    width: 100%;
-    height: 50px;
-    margin-bottom: 25px;
-    padding: 0 15px 2px;
-    font-size: 17px;
-    background: white;
-    border: 2px solid #EBEBEB;
-    border-radius: 4px;
-    -webkit-box-shadow: inset 0 -2px #EBEBEB;
-    box-shadow: inset 0 -2px #EBEBEB;
 }
 
 .signUpInput:focus {

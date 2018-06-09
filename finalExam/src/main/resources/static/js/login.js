@@ -5,6 +5,10 @@ $("#loginSubmit").click(function() {
             dataType: 'application/json',
             type: 'get',
             success: function (data) {
+                $.each(data, function (i, user) {
+
+                    console.log(user.nickname)
+                })
             }
         })
     }

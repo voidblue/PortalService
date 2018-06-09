@@ -50,7 +50,7 @@ public class UserController {
         return ResultMessageFactory.get200();
     }
 
-    @PostMapping("/{id}/image")
+    @PostMapping("/{id}/image.jpg")
     public ResultMessage imgaeCreate(@RequestBody MultipartFile image, @PathVariable String id){
         try {
             image.transferTo(new File(IMAGE_PATH + "/" + id  + "/image.jpg"));
@@ -71,7 +71,7 @@ public class UserController {
         return ResultMessageFactory.get200();
     }
 
-    @PutMapping("/{id}/image")
+    @PutMapping("/{id}/image.jpg")
         //TODO 권한점검
     public ResultMessage update(@RequestBody MultipartFile image, @PathVariable String id){
         try {
@@ -84,7 +84,7 @@ public class UserController {
         return  ResultMessageFactory.get200();
     }
 
-    @DeleteMapping("/{id}/image")
+    @DeleteMapping("/{id}/image.jpg")
         //TODO 권한점검
     public ResultMessage deleteImage(@PathVariable String id){
         new File(IMAGE_PATH + "/" + id + "/image").delete();

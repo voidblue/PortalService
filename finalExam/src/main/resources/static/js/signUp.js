@@ -8,15 +8,11 @@ $("#signUpForm").click(function() {
             nickname : $("#nickname").val()
         }),
         type: 'post',
-        success: function (data, status) {
+        success: function (data) {
             $.each(data, function (i, result) {
-                alert(result.token);
-                alert(status);
             })
         },
         error: function (data, textStatus, jqXHR) {
-            alert(jqXHR.status);
-
         }
     })
         $("#signUpForm").attr("action", "api/user/" + $("#id").val() + "/image")
