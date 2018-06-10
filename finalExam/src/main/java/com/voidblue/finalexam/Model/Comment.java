@@ -5,6 +5,7 @@ import lombok.Data;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 
 @Data
 @Entity
@@ -16,5 +17,7 @@ public class Comment {
     private String text;
     @Column(updatable = false)
     private String timeCreated;
+    @Transient
+    private String  token;
 
 }

@@ -26,7 +26,9 @@ public class authContoller {
                 jwtString = Jwts.builder()
                         .setHeaderParam("typ", "JWT")
                         .setHeaderParam("issueDate", System.currentTimeMillis())
-                        .setSubject("nickname=" + user.get().getNickname() + "," + "id=" + user.get().getId())
+                        .setSubject("")
+                        .claim("id", user.get().getId())
+                        .claim("nickname", user.get().getNickname())
                         .signWith(SignatureAlgorithm.HS512, "portalServiceFinalExam")
                         .compact();
             }else{

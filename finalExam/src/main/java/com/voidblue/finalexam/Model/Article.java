@@ -4,10 +4,7 @@ package com.voidblue.finalexam.Model;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
+import javax.persistence.*;
 import java.util.Date;
 
 @Data
@@ -20,5 +17,7 @@ public class Article {
     private String text;
     @Column(updatable = false)
     private String timeCreated;
+    @Transient
+    private String  token;
 
 }

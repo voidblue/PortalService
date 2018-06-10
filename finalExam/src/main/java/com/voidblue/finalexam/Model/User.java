@@ -7,6 +7,7 @@ import org.springframework.util.MultiValueMap;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.Transient;
 import java.lang.reflect.Field;
 
 @Data
@@ -16,4 +17,6 @@ public class User {
     private String id;
     private String password;
     private String nickname;
+    @Transient
+    private String  token;
 }

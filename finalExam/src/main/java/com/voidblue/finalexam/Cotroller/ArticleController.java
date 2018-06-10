@@ -5,6 +5,7 @@ import com.voidblue.finalexam.Dao.ArticleRepository;
 import com.voidblue.finalexam.Model.Article;
 import com.voidblue.finalexam.Utils.ResultMessageFactory;
 import com.voidblue.finalexam.Utils.ResultMessage;
+import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,6 +35,13 @@ public class ArticleController {
 
     @PostMapping
     public ResultMessage create(@RequestBody Article article){
+        String token = article.getToken();
+        ResultMessage resultMessage = null;
+        if (token == null){
+            resultMessage = ResultMessageFactory.notLogined();
+        }else{
+            Jwts.parser().setSigningKey("portalServiceFinalExam");
+        }
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
         article.setTimeCreated(simpleDateFormat.format(new Date()));
         articleRepository.save(article);
