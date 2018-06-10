@@ -5,9 +5,6 @@ import com.voidblue.finalexam.Dao.ArticleRepository;
 import com.voidblue.finalexam.Model.Article;
 import com.voidblue.finalexam.Utils.ResultMessageFactory;
 import com.voidblue.finalexam.Utils.ResultMessage;
-import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.Jws;
-import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,7 +18,6 @@ import java.util.Optional;
 @RequestMapping("/api/article")
 //TODO 이미지 부분도 처리해야 함
 public class ArticleController {
-
     @Autowired
     ArticleRepository articleRepository;
 
@@ -39,7 +35,7 @@ public class ArticleController {
     @PostMapping
     public ResultMessage create(@RequestBody Article article, HttpServletRequest req){
         String token = req.getHeader("token");
-        ResultMessage resultMessage = askAuthorityAndAct(article, token , ()->{
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, () -> {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
             article.setTimeCreated(simpleDateFormat.format(new Date()));
             articleRepository.save(article);
@@ -50,7 +46,7 @@ public class ArticleController {
     @PutMapping
     public ResultMessage update(@RequestBody Article article, HttpServletRequest req){
         String token = req.getHeader("token");
-        ResultMessage resultMessage = askAuthorityAndAct(article, token, ()->{
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, () -> {
             articleRepository.save(article);
         });
         return  ResultMessageFactory.accept();
@@ -59,15 +55,15 @@ public class ArticleController {
     @DeleteMapping("/{id}")
     public ResultMessage delete(@PathVariable Integer id, HttpServletRequest req){
         String token = req.getHeader("token");
-        Optional<Article> OptArticle = articleRepository.findById(id);
+        Optional<Article> optArticle = articleRepository.findById(id);
         Article article;
         ResultMessage resultMessage = null;
         //TODO 옵셔널을 써서 오히려 복잡해졌는데??
-        if(OptArticle == null){
+        if(optArticle == null){
             resultMessage = ResultMessageFactory.isEmpty();
         }else {
-            article = OptArticle.get();
-            resultMessage = askAuthorityAndAct(article, token, ()->{
+            article = optArticle.get();
+            resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, () -> {
                 articleRepository.deleteById(id);
             });
 
@@ -76,22 +72,4 @@ public class ArticleController {
         return  resultMessage;
     }
 
-    public ResultMessage askAuthorityAndAct(@RequestBody Article article, String token, ActAfterAuthStrategy actAfterAuthStrategy) {
-        ResultMessage resultMessage = null;
-        if (token == null){
-            resultMessage = ResultMessageFactory.notLogined();
-        }else{
-            Jws<Claims> claims = Jwts.parser()
-                    .setSigningKey("portalServiceFinalExam")
-                    .parseClaimsJws(token);
-            String user = (String) claims.getBody().get("id");
-            if (article.getAuthor().equals(user)){
-                actAfterAuthStrategy.act();
-                resultMessage = ResultMessageFactory.accept();
-            }else{
-                resultMessage = ResultMessageFactory.notAuthority();
-            }
-        }
-        return resultMessage;
-    }
 }

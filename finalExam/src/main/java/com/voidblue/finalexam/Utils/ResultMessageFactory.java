@@ -15,7 +15,7 @@ public class ResultMessageFactory {
         return resultMessage;
     }
 
-    public static ResultMessage notAuthority(){
+    public static ResultMessage noAuthority(){
         ResultMessage resultMessage = new ResultMessage();
         resultMessage.setResultCode(404);
         resultMessage.setMessage("접근 권한이 없습니다.");

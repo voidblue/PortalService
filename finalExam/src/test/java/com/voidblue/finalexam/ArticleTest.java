@@ -3,9 +3,9 @@ package com.voidblue.finalexam;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
-import com.sun.xml.internal.ws.encoding.ContentType;
 import com.voidblue.finalexam.Model.Article;
 import com.voidblue.finalexam.Utils.ResultMessage;
+import com.voidblue.finalexam.Utils.ResultMessageFactory;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.hamcrest.collection.IsEmptyCollection;
@@ -97,10 +97,40 @@ public class ArticleTest {
         ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(PATH + "/" + articleForDelete.getId(), HttpMethod.DELETE, entity, ResultMessage.class);
         assertThat(resultMessage.getBody().getResultCode(),is(200));
         assertThat(restTemplate.getForObject(PATH + "/" + articleForDelete.getId(), Article.class), is(nullValue()));
-
-
-
     }
+
+
+    @Test
+    public void notoken(){
+        Article article = getArticle();
+        ResponseEntity<ResultMessage> resultMessage = restTemplate.postForEntity(PATH, article, ResultMessage.class);
+
+        assertThat(ResultMessageFactory.notLogined(), is(resultMessage.getBody()));
+    }
+
+    @Test
+    public void notOwner(){
+        Article article = getArticle();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        jwtString = Jwts.builder()
+                .setHeaderParam("typ", "JWT")
+                .setHeaderParam("issueDate", System.currentTimeMillis())
+                .setSubject("")
+                .claim("id", "다른아이디")
+                .claim("nickname", "")
+                .signWith(SignatureAlgorithm.HS512, "portalServiceFinalExam")
+                .compact();
+        headers.add("token", jwtString);
+
+
+        HttpEntity entity = new HttpEntity(article, headers);
+        ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(PATH + "/" + article.getId() , HttpMethod.DELETE, entity, ResultMessage.class);
+
+        assertThat(ResultMessageFactory.noAuthority(), is(resultMessage.getBody()));
+    }
+
+
     private Article getArticle() {
         Article article = new Article();
         article.setId(1);

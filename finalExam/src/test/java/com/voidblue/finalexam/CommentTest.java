@@ -3,13 +3,19 @@ package com.voidblue.finalexam;
 import  static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.CoreMatchers.*;
 
+import com.voidblue.finalexam.Model.Article;
 import com.voidblue.finalexam.Model.Comment;
 import com.voidblue.finalexam.Utils.ResultMessage;
+import com.voidblue.finalexam.Utils.ResultMessageFactory;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -24,6 +30,23 @@ public class CommentTest {
     TestRestTemplate restTemplate;
 
     private static final String PATH = "/api/comment";
+    String jwtString;
+    HttpHeaders httpHeaders;
+
+    @Before
+    public void setup(){
+        httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        jwtString = Jwts.builder()
+                .setHeaderParam("typ", "JWT")
+                .setHeaderParam("issueDate", System.currentTimeMillis())
+                .setSubject("")
+                .claim("id", "testid")
+                .claim("nickname", "")
+                .signWith(SignatureAlgorithm.HS512, "portalServiceFinalExam")
+                .compact();
+        httpHeaders.add("token", jwtString);
+    }
 
     @Test
     public void get(){
@@ -45,25 +68,34 @@ public class CommentTest {
 
     @Test
     public void Create(){
+        notOwner(PATH, HttpMethod.POST);
+        notoken(PATH, HttpMethod.POST);
         Comment commentForCreate = getValidComment();
-        ResultMessage resultMessage = restTemplate.postForObject(PATH + "/" , commentForCreate, ResultMessage.class);
+
+        HttpEntity entity = new HttpEntity(commentForCreate, httpHeaders);
+        ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(PATH ,HttpMethod.POST, entity, ResultMessage.class);
 
         Comment createdComment = restTemplate.getForObject(PATH + "/" + commentForCreate.getId(), Comment.class);
-
-        assertThat(resultMessage.getResultCode(), is(200));
+        System.out.println(resultMessage.getBody());
+        assertThat(resultMessage.getBody().getResultCode(), is(200));
         validateComment(commentForCreate.getAuthor(), commentForCreate.getArticle(), commentForCreate.getText()
                 ,createdComment);
+
+
     }
 
     @Test
     public void update(){
-        Comment commentForCreate = getValidComment();
-        ResultMessage resultMessage = restTemplate.postForObject(PATH + "/" , commentForCreate, ResultMessage.class);
+        Create();
+        notOwner(PATH, HttpMethod.PUT);
+        notoken(PATH, HttpMethod.PUT);
 
-        Comment commentForUpdate = restTemplate.getForObject(PATH + "/" + commentForCreate.getId(), Comment.class);
+        Comment commentForUpdate = getValidComment();
+        commentForUpdate.setText("수정됨");
+        HttpEntity entity = new HttpEntity(commentForUpdate, httpHeaders);
+        ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(PATH,HttpMethod.PUT, entity, ResultMessage.class);
 
 
-        commentForUpdate.setText("수정된내용");
         restTemplate.put(PATH + "/" , commentForUpdate);
         Comment updatedComment = restTemplate.getForObject(PATH + "/" + commentForUpdate.getId(), Comment.class);
 
@@ -74,19 +106,48 @@ public class CommentTest {
     }
     @Test
     public void delete(){
-        Comment commentForCreate = getValidComment();
-        ResultMessage resultMessage = restTemplate.postForObject(PATH + "/" , commentForCreate, ResultMessage.class);
+        Create();
+        Comment commentForDelete = getValidComment();
 
-        Comment createdComment = restTemplate.getForObject(PATH + "/" + commentForCreate.getId(), Comment.class);
+        notOwner(PATH + "/" + commentForDelete.getId() , HttpMethod.DELETE);
+        notoken(PATH + "/" + commentForDelete.getId(), HttpMethod.DELETE);
 
-        restTemplate.delete(PATH +"/"+ createdComment.getId());
+        HttpEntity entity = new HttpEntity(commentForDelete, httpHeaders);
+        ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(PATH + "/" + commentForDelete.getId(),HttpMethod.DELETE, entity, ResultMessage.class);
 
-        assertThat(restTemplate.getForObject(PATH + "/" + commentForCreate.getId(), Comment.class), is(nullValue()));
+        assertThat(resultMessage.getBody(), is(ResultMessageFactory.accept()));
+        assertThat(restTemplate.getForObject(PATH + "/" + commentForDelete.getId(), Comment.class), is(nullValue()));
     }
 
 
+    public void notOwner(String url,HttpMethod httpMethod){
+        Comment comment = getValidComment();
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_JSON);
+        jwtString = Jwts.builder()
+                .setHeaderParam("typ", "JWT")
+                .setHeaderParam("issueDate", System.currentTimeMillis())
+                .setSubject("")
+                .claim("id", "다른아이디")
+                .claim("nickname", "")
+                .signWith(SignatureAlgorithm.HS512, "portalServiceFinalExam")
+                .compact();
+        headers.add("token", jwtString);
 
 
+        HttpEntity entity = new HttpEntity(comment, headers);
+        ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(url , httpMethod, entity, ResultMessage.class);
+
+        assertThat(ResultMessageFactory.noAuthority(), is(resultMessage.getBody()));
+    }
+
+    public void notoken(String url, HttpMethod httpMethod){
+        Comment comment = getValidComment();
+        HttpHeaders notokenHeader = new HttpHeaders();
+        HttpEntity entity = new HttpEntity(comment, notokenHeader);
+        ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(url , httpMethod, entity, ResultMessage.class);
+        assertThat(ResultMessageFactory.notLogined(), is(resultMessage.getBody()));
+    }
     private void validateComment(String author, Integer article, String text, Comment comment) {
         assertThat(comment.getAuthor() , is(author));
         assertThat(comment.getArticle() , is(article));
@@ -97,7 +158,7 @@ public class CommentTest {
         Comment comment = new Comment();
         comment.setId(2);
         comment.setArticle(1);
-        comment.setAuthor("testuser");
+        comment.setAuthor("testid");
         comment.setText("내용");
         return comment;
     }

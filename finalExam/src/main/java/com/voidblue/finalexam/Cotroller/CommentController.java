@@ -7,6 +7,7 @@ import com.voidblue.finalexam.Utils.ResultMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -29,25 +30,44 @@ public class CommentController {
     }
 
     @PostMapping
-    public ResultMessage create(@RequestBody Comment comment){
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
-        comment.setTimeCreated(simpleDateFormat.format(new Date()));
+    public ResultMessage create(@RequestBody Comment comment, HttpServletRequest req){
+        String token = req.getHeader("token");
 
-        commentRepository.save(comment);
-        return ResultMessageFactory.accept();
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(comment.getAuthor(), token, ()->{
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
+            comment.setTimeCreated(simpleDateFormat.format(new Date()));
+            commentRepository.save(comment);
+        });
+
+
+        return resultMessage;
     }
 
     @PutMapping
-    public ResultMessage update(@RequestBody Comment comment){
+    public ResultMessage update(@RequestBody Comment comment, HttpServletRequest req){
+        String token  = req.getHeader("token");
         commentRepository.save(comment);
-        return ResultMessageFactory.accept();
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(comment.getAuthor(), token, ()->{
+            commentRepository.save(comment);
+        });
+        return resultMessage;
     }
 
     @DeleteMapping("/{id}")
-    public ResultMessage delete(@PathVariable Integer id){
-        commentRepository.deleteById(id);
-
-        return ResultMessageFactory.accept();
+    public ResultMessage delete(@PathVariable Integer id, HttpServletRequest req){
+        String token = req.getHeader("token");
+        Optional<Comment> optComment = commentRepository.findById(id);
+        Comment comment;
+        ResultMessage resultMessage;
+        if(optComment == null){
+            resultMessage = ResultMessageFactory.isEmpty();
+        }else {
+            comment = optComment.get();
+            resultMessage = AuthContext.askAuthorityAndAct(comment.getAuthor(), token, () -> {
+                commentRepository.deleteById(id);
+            });
+        }
+        return resultMessage;
 
     }
 
