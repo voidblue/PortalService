@@ -17,7 +17,6 @@ public class Comment {
     private String text;
     @Column(updatable = false)
     private String timeCreated;
-    @Transient
-    private String  token;
+
 
 }

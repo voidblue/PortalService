@@ -11,10 +11,8 @@ import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.cache.support.NullValue;
 import org.springframework.test.context.junit4.SpringRunner;
 
-import javax.validation.constraints.Null;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -49,7 +47,7 @@ public class ThumbUpTest {
         ThumbUp thumbUp = getThumbUp();
 
         ResultMessage resultMessage = restTemplate.postForObject(PATH + "/", thumbUp, ResultMessage.class);
-        assertThat(resultMessage, is(ResultMessageFactory.get200()));
+        assertThat(resultMessage, is(ResultMessageFactory.accept()));
 
         ThumbUp createdThumbUp = restTemplate.getForObject(PATH + "/"  + thumbUp.getId(), ThumbUp.class);
 

@@ -5,7 +5,6 @@ import com.voidblue.finalexam.Dao.ThumbUpRepository;
 import com.voidblue.finalexam.Model.ThumbUp;
 import com.voidblue.finalexam.Utils.ResultMessage;
 import com.voidblue.finalexam.Utils.ResultMessageFactory;
-import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -34,12 +33,12 @@ public class ThumbUpController {
     @PostMapping
     public ResultMessage create(@RequestBody ThumbUp thumbUp){
         thumbUpRepository.save(thumbUp);
-        return ResultMessageFactory.get200();
+        return ResultMessageFactory.accept();
     }
 
     @DeleteMapping("/{id}")
     public ResultMessage delete(@PathVariable Integer id){
         thumbUpRepository.deleteById(id);
-        return ResultMessageFactory.get200();
+        return ResultMessageFactory.accept();
     }
 }

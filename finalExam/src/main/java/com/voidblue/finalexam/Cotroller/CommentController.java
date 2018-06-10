@@ -34,20 +34,20 @@ public class CommentController {
         comment.setTimeCreated(simpleDateFormat.format(new Date()));
 
         commentRepository.save(comment);
-        return ResultMessageFactory.get200();
+        return ResultMessageFactory.accept();
     }
 
     @PutMapping
     public ResultMessage update(@RequestBody Comment comment){
         commentRepository.save(comment);
-        return ResultMessageFactory.get200();
+        return ResultMessageFactory.accept();
     }
 
     @DeleteMapping("/{id}")
     public ResultMessage delete(@PathVariable Integer id){
         commentRepository.deleteById(id);
 
-        return ResultMessageFactory.get200();
+        return ResultMessageFactory.accept();
 
     }
 

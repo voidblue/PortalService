@@ -17,7 +17,5 @@ public class Article {
     private String text;
     @Column(updatable = false)
     private String timeCreated;
-    @Transient
-    private String  token;
 
 }

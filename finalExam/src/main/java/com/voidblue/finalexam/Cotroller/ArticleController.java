@@ -5,10 +5,13 @@ import com.voidblue.finalexam.Dao.ArticleRepository;
 import com.voidblue.finalexam.Model.Article;
 import com.voidblue.finalexam.Utils.ResultMessageFactory;
 import com.voidblue.finalexam.Utils.ResultMessage;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -34,33 +37,61 @@ public class ArticleController {
     }
 
     @PostMapping
-    public ResultMessage create(@RequestBody Article article){
-        String token = article.getToken();
+    public ResultMessage create(@RequestBody Article article, HttpServletRequest req){
+        String token = req.getHeader("token");
+        ResultMessage resultMessage = askAuthorityAndAct(article, token , ()->{
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
+            article.setTimeCreated(simpleDateFormat.format(new Date()));
+            articleRepository.save(article);
+        });
+        return  resultMessage;
+    }
+
+    @PutMapping
+    public ResultMessage update(@RequestBody Article article, HttpServletRequest req){
+        String token = req.getHeader("token");
+        ResultMessage resultMessage = askAuthorityAndAct(article, token, ()->{
+            articleRepository.save(article);
+        });
+        return  ResultMessageFactory.accept();
+    }
+
+    @DeleteMapping("/{id}")
+    public ResultMessage delete(@PathVariable Integer id, HttpServletRequest req){
+        String token = req.getHeader("token");
+        Optional<Article> OptArticle = articleRepository.findById(id);
+        Article article;
+        ResultMessage resultMessage = null;
+        //TODO 옵셔널을 써서 오히려 복잡해졌는데??
+        if(OptArticle == null){
+            resultMessage = ResultMessageFactory.isEmpty();
+        }else {
+            article = OptArticle.get();
+            resultMessage = askAuthorityAndAct(article, token, ()->{
+                articleRepository.deleteById(id);
+            });
+
+        }
+
+        return  resultMessage;
+    }
+
+    public ResultMessage askAuthorityAndAct(@RequestBody Article article, String token, ActAfterAuthStrategy actAfterAuthStrategy) {
         ResultMessage resultMessage = null;
         if (token == null){
             resultMessage = ResultMessageFactory.notLogined();
         }else{
-            Jwts.parser().setSigningKey("portalServiceFinalExam");
+            Jws<Claims> claims = Jwts.parser()
+                    .setSigningKey("portalServiceFinalExam")
+                    .parseClaimsJws(token);
+            String user = (String) claims.getBody().get("id");
+            if (article.getAuthor().equals(user)){
+                actAfterAuthStrategy.act();
+                resultMessage = ResultMessageFactory.accept();
+            }else{
+                resultMessage = ResultMessageFactory.notAuthority();
+            }
         }
-        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
-        article.setTimeCreated(simpleDateFormat.format(new Date()));
-        articleRepository.save(article);
-
-        return  ResultMessageFactory.get200();
+        return resultMessage;
     }
-
-    @PutMapping
-    public ResultMessage update(@RequestBody Article article){
-        articleRepository.save(article);
-        return  ResultMessageFactory.get200();
-    }
-
-    @DeleteMapping("/{id}")
-    public ResultMessage delete(@PathVariable Integer id){
-        articleRepository.deleteById(id);
-
-        return  ResultMessageFactory.get200();
-    }
-
-
 }

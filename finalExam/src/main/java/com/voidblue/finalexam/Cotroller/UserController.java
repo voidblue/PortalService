@@ -32,14 +32,14 @@ public class UserController {
         System.out.println(user.toString() +"모델");
         userRepository.save(user);
 
-        return  ResultMessageFactory.get200();
+        return  ResultMessageFactory.accept();
     }
 
     @PutMapping
     public ResultMessage update(@RequestBody User user){
         userRepository.save(user);
         //TODO 권한점검
-        return ResultMessageFactory.get200();
+        return ResultMessageFactory.accept();
     }
 
     @DeleteMapping("/{id}")
@@ -47,7 +47,7 @@ public class UserController {
         userRepository.deleteById(id);
 
 
-        return ResultMessageFactory.get200();
+        return ResultMessageFactory.accept();
     }
 
     @PostMapping("/{id}/image.jpg")
@@ -68,7 +68,7 @@ public class UserController {
         }
 
 
-        return ResultMessageFactory.get200();
+        return ResultMessageFactory.accept();
     }
 
     @PutMapping("/{id}/image.jpg")
@@ -81,7 +81,7 @@ public class UserController {
         }
 
 
-        return  ResultMessageFactory.get200();
+        return  ResultMessageFactory.accept();
     }
 
     @DeleteMapping("/{id}/image.jpg")
@@ -89,6 +89,6 @@ public class UserController {
     public ResultMessage deleteImage(@PathVariable String id){
         new File(IMAGE_PATH + "/" + id + "/image").delete();
 
-        return  ResultMessageFactory.get200();
+        return  ResultMessageFactory.accept();
     }
 }

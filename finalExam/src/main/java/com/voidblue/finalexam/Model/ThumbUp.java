@@ -12,6 +12,4 @@ public class ThumbUp {
     private Integer id;
     private String user;
     private Integer article;
-    @Transient
-    private String  token;
 }

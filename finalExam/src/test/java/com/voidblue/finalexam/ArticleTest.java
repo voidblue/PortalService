@@ -3,14 +3,19 @@ package com.voidblue.finalexam;
 import static org.hamcrest.CoreMatchers.*;
 import static org.hamcrest.MatcherAssert.*;
 
+import com.sun.xml.internal.ws.encoding.ContentType;
 import com.voidblue.finalexam.Model.Article;
 import com.voidblue.finalexam.Utils.ResultMessage;
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
 import org.hamcrest.collection.IsEmptyCollection;
+import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
 import java.util.List;
@@ -21,15 +26,32 @@ public class ArticleTest {
     @Autowired
     TestRestTemplate restTemplate;
     private static final String PATH = "/api/article";
+    String jwtString;
+    HttpHeaders httpHeaders;
+    @Before
+    public void setup(){
+        httpHeaders = new HttpHeaders();
+        httpHeaders.setContentType(MediaType.APPLICATION_JSON);
+        jwtString = Jwts.builder()
+                .setHeaderParam("typ", "JWT")
+                .setHeaderParam("issueDate", System.currentTimeMillis())
+                .setSubject("")
+                .claim("id", "testid")
+                .claim("nickname", "")
+                .signWith(SignatureAlgorithm.HS512, "portalServiceFinalExam")
+                .compact();
+        httpHeaders.add("token", jwtString);
+
+    }
 
     @Test
     public void get(){
-        int id = 1;
+        int id = 0;
 
         Article article = restTemplate.getForObject(PATH + "/" + id, Article.class);
 
-        assertThat(article.getId(), is(1));
-        validateArticle(article, "testid", "테스트",  "제목", "2000-01-01 00:00:00.0");
+        assertThat(article.getId(), is(0));
+        validateArticle(article, "testid", "내용",  "제목");
     }
 
     @Test
@@ -40,50 +62,45 @@ public class ArticleTest {
 
     @Test
     public void create(){
-        //지금 create의 반환값이 ResultMessage인데 이거를 Article로 변경하지 않으면 생성하고 바로 수정하는 테스트는 안되고(id셋팅을 무시함)
         Article articleForCreate = getArticle();
-        ResultMessage resultMessage = restTemplate.postForObject(PATH + "/", articleForCreate, ResultMessage.class);
+        HttpEntity<ResultMessage> entity = new HttpEntity(articleForCreate, httpHeaders);
+
+        ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(PATH , HttpMethod.POST, entity, ResultMessage.class);
         Article createdArticle = restTemplate.getForObject(PATH + "/" + articleForCreate.getId(), Article.class);
 
-        assertThat(resultMessage.getResultCode(), is(200));
-        validateArticle(createdArticle, articleForCreate.getAuthor(), articleForCreate.getText(), articleForCreate.getTitle(), createdArticle.getTimeCreated());
-
+        System.out.println(resultMessage);
+        assertThat(resultMessage.getBody().getResultCode(), is(200));
+        validateArticle(createdArticle, articleForCreate.getAuthor(), articleForCreate.getText(), articleForCreate.getTitle());
     }
 
     @Test
     public void update(){
-        //넣은 id값을 가져오는 것이 지금은 불가능, 기존에 있는 것만 수정해보기
-        Article articleForCreate = getArticle();
-        restTemplate.postForObject(PATH  + "/", articleForCreate, ResultMessage.class);
-        Article articleForUpdate = restTemplate.getForObject(PATH + "/" + 1, Article.class);
+        create();
+        Article articleForUpdate = getArticle();
 
         articleForUpdate.setTitle("수정됨");
+        HttpEntity entity = new HttpEntity(articleForUpdate, httpHeaders);
+        ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(PATH , HttpMethod.PUT, entity, ResultMessage.class);
+        Article updatedArticle = restTemplate.getForObject(PATH + "/" + articleForUpdate.getId(), Article.class);
 
-        restTemplate.put(PATH  + "/", articleForUpdate);
-        Article updatedArticle = restTemplate.getForObject(PATH + "/" + 1, Article.class);
+        assertThat(resultMessage.getBody().getResultCode(),is(200));
+        validateArticle(updatedArticle, articleForUpdate.getAuthor(), articleForUpdate.getText(), "수정됨");
 
-        validateArticle(updatedArticle, articleForCreate.getAuthor(), articleForCreate.getText(), "수정됨", articleForCreate.getTimeCreated());
-
-        articleForUpdate.setTitle("제목");
-        restTemplate.put(PATH  + "/", articleForUpdate);
-        updatedArticle = restTemplate.getForObject(PATH + "/" + 1, Article.class);
-
-        validateArticle(updatedArticle, articleForCreate.getAuthor(), articleForCreate.getText(), "제목", articleForCreate.getTimeCreated());
     }
 
     @Test
     public void delete(){
-        Article articleForCreate = getArticle();
-        ResultMessage resultMessage = restTemplate.postForObject(PATH + "/", articleForCreate, ResultMessage.class);
-        Article createdArticle = restTemplate.getForObject(PATH + "/" + articleForCreate.getId(), Article.class);
+        create();
+        Article articleForDelete = getArticle();
 
-        restTemplate.delete(PATH + "/" + createdArticle.getId());
-        assertThat(restTemplate.getForObject(PATH + "/" + createdArticle.getId(), Article.class), is(nullValue()));
+        HttpEntity<ResultMessage> entity = new HttpEntity(null, httpHeaders);
+        ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(PATH + "/" + articleForDelete.getId(), HttpMethod.DELETE, entity, ResultMessage.class);
+        assertThat(resultMessage.getBody().getResultCode(),is(200));
+        assertThat(restTemplate.getForObject(PATH + "/" + articleForDelete.getId(), Article.class), is(nullValue()));
 
 
 
     }
-
     private Article getArticle() {
         Article article = new Article();
         article.setId(1);
@@ -94,7 +111,7 @@ public class ArticleTest {
         return article;
     }
 
-    private void validateArticle(Article article, String author, String text, String title, String timeCreated) {
+    private void validateArticle(Article article, String author, String text, String title) {
         assertThat(article.getAuthor(), is(author));
         assertThat(article.getText(), is(text));
         assertThat(article.getTitle(), is(title));
