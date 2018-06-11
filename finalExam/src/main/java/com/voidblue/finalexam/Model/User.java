@@ -7,7 +7,6 @@ import org.springframework.util.MultiValueMap;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.Transient;
 import java.lang.reflect.Field;
 
 @Data

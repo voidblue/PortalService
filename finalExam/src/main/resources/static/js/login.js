@@ -2,22 +2,22 @@ console.log(sessionStorage.getItem("token"));
 
 if (sessionStorage.getItem("token") === null) {
     $("#loginArea").html(
-        "<div id=\"signUpForm\">\
-            <h1 class=\"loginTitle\">로그인</h1>\
-            <input id = \"id\" type=\"text\" class=\"loginInput\" placeholder=\"아이디\" autofocus required>\
-            <input id = \"password\" type=\"password\" class=\"loginInput\" placeholder=\"비밀번호\" required>\
-            <div id = \"loginSubmit\"  class=\"submitButton\">로그인</div>\
-            <a href=\"signUp.html\">\
-            <div id = \"signUp\" class=\"submitButton\" href=\"signUp.html\">회원가입</div>\
+        '<div id="signUpForm">\
+            <h1 class="loginTitle">로그인</h1>\
+            <input id = "id" type="text" class="loginInput" placeholder="아이디" autofocus required>\
+            <input id = "password" type="password" class="loginInput" placeholder="비밀번호" required>\
+            <button id = "loginSubmit"  class="submitButton">로그인</button>\
+            <a href="signUp.html">\
+            <button id = "signUp" class="submitButton" href="signUp.html">회원가입</button>\
             </a>\
-            </div>")
+            </div>')
 }
 else {
     var jsonValues = JSON.parse(decodeData(sessionStorage.getItem("token")))
-    $("#loginArea").html("<div id=\"signUpForm\">\
-    <img src = \"/api/user/" + jsonValues['id'] + "image.jpg\">\
-    <h3>" + jsonValues['nickname'] + "님 환영합니다.</h3>\
-    <div id = \"logout\"  class=\"submitButton\">로그아웃</div>")
+    $("#loginArea").html('<div id="signUpForm">\
+    <img src = "/api/user/"' + jsonValues["id"] + '"image.jpg">\
+    <h3>' + jsonValues["nickname"] + ' 님 환영합니다.</h3>\
+    <div id = "logout"  class="submitButton">로그아웃</div>')
 }
 
 

@@ -7,8 +7,12 @@ import com.voidblue.finalexam.Utils.ResultMessageFactory;
 import com.voidblue.finalexam.Utils.ResultMessage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.io.IOException;
+import java.nio.file.InvalidPathException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -18,6 +22,8 @@ import java.util.Optional;
 @RequestMapping("/api/article")
 //TODO 이미지 부분도 처리해야 함
 public class ArticleController {
+    private static final String IMAGE_PATH = System.getProperty("user.dir") + "/src/main/resources/static/api/article";
+
     @Autowired
     ArticleRepository articleRepository;
 
@@ -70,6 +76,28 @@ public class ArticleController {
         }
 
         return  resultMessage;
+    }
+
+
+    @PostMapping("/{id}/image.jpg")
+    public ResultMessage imgaeCreate(@RequestBody MultipartFile image, @PathVariable String id){
+        try {
+            image.transferTo(new File(IMAGE_PATH + "/" + id  + "/image.jpg"));
+        } catch (InvalidPathException e){
+            File imageDir = new File(IMAGE_PATH  + "/" + id);
+            imageDir.mkdir();
+            try {
+                image.transferTo(new File(IMAGE_PATH  + "/" + id + "/image.jpg"));
+            } catch (IOException e1) {
+                e1.printStackTrace();
+            }
+
+        } catch (IOException e2) {
+            e2.printStackTrace();
+        }
+
+
+        return ResultMessageFactory.accept();
     }
 
 }

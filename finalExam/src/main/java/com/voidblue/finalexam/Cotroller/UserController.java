@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
@@ -21,9 +23,13 @@ public class UserController {
     UserRepository userRepository;
 
     @GetMapping(value = "/{id}")
-    public Optional<User> get(@PathVariable String id){
-
-        return userRepository.findById(id);
+    public Optional<User> get(@PathVariable String id, HttpServletRequest req, HttpServletResponse res){
+        String token = req.getHeader("token");
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(id, token, ()->{
+            userRepository.findById(id);
+        });
+        res.setStatus(404);
+        return null;
     }
 
     //TODO 남용하면 업데이트 처럼 동작 할 수 있을 거 같은데 어떻게 구문 하면 좋을지?
@@ -36,22 +42,24 @@ public class UserController {
     }
 
     @PutMapping
-    public ResultMessage update(@RequestBody User user){
-        userRepository.save(user);
-        //TODO 권한점검
+    public ResultMessage update(@RequestBody User user, HttpServletRequest req){
+        String token = req.getHeader("token");
+        AuthContext.askAuthorityAndAct(user.getId(), token, ()->{
+            userRepository.save(user);
+        });
         return ResultMessageFactory.accept();
     }
 
-    @DeleteMapping("/{id}")
-    public ResultMessage delete(@PathVariable String id){
-        userRepository.deleteById(id);
-
-
-        return ResultMessageFactory.accept();
-    }
+//    @DeleteMapping("/{id}")
+//    public ResultMessage delete(@PathVariable String id){
+//        userRepository.deleteById(id);
+//
+//
+//        return ResultMessageFactory.accept();
+//    }
 
     @PostMapping("/{id}/image.jpg")
-    public ResultMessage imgaeCreate(@RequestBody MultipartFile image, @PathVariable String id){
+    public ResultMessage imageCreate(@RequestBody MultipartFile image, @PathVariable String id){
         try {
             image.transferTo(new File(IMAGE_PATH + "/" + id  + "/image.jpg"));
         } catch (InvalidPathException e){
@@ -72,23 +80,24 @@ public class UserController {
     }
 
     @PutMapping("/{id}/image.jpg")
-        //TODO 권한점검
-    public ResultMessage update(@RequestBody MultipartFile image, @PathVariable String id){
-        try {
-            image.transferTo(new File(IMAGE_PATH + "/" + id +  "/image"));
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public ResultMessage update(@RequestBody MultipartFile image, @PathVariable String id, HttpServletRequest req){
+        String token = req.getHeader("token");
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(id, token, ()->{
+            try {
+                image.transferTo(new File(IMAGE_PATH + "/" + id +  "/image"));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        });
 
-
-        return  ResultMessageFactory.accept();
+        return resultMessage;
     }
 
-    @DeleteMapping("/{id}/image.jpg")
-        //TODO 권한점검
-    public ResultMessage deleteImage(@PathVariable String id){
-        new File(IMAGE_PATH + "/" + id + "/image").delete();
-
-        return  ResultMessageFactory.accept();
-    }
+//    @DeleteMapping("/{id}/image.jpg")
+//        //TODO 권한점검
+//    public ResultMessage deleteImage(@PathVariable String id){
+//        new File(IMAGE_PATH + "/" + id + "/image").delete();
+//
+//        return  ResultMessageFactory.accept();
+//    }
 }
