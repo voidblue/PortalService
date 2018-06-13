@@ -9,7 +9,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
@@ -22,7 +24,7 @@ import java.util.Optional;
 @RequestMapping("/api/article")
 //TODO 이미지 부분도 처리해야 함
 public class ArticleController {
-    private static final String IMAGE_PATH = System.getProperty("user.dir") + "/src/main/resources/static/api/article";
+    private static final String IMAGE_PATH = System.getProperty("user.dir") + "/src/main/resources/static/api/article/image";
 
     @Autowired
     ArticleRepository articleRepository;
@@ -41,8 +43,11 @@ public class ArticleController {
     @PostMapping
     public ResultMessage create(@RequestBody Article article, HttpServletRequest req){
         String token = req.getHeader("token");
+        System.out.println(token);
+        System.out.println(article);
         ResultMessage resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, () -> {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+            System.out.println(simpleDateFormat.format(new Date()));
             article.setTimeCreated(simpleDateFormat.format(new Date()));
             articleRepository.save(article);
         });
@@ -55,7 +60,7 @@ public class ArticleController {
         ResultMessage resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, () -> {
             articleRepository.save(article);
         });
-        return  ResultMessageFactory.accept();
+        return  resultMessage;
     }
 
     @DeleteMapping("/{id}")
@@ -78,25 +83,15 @@ public class ArticleController {
         return  resultMessage;
     }
 
-
-    @PostMapping("/{id}/image.jpg")
-    public ResultMessage imgaeCreate(@RequestBody MultipartFile image, @PathVariable String id){
+    //이미지 권한검사 불가 ㅠㅠ
+    @PostMapping("/image")
+    public ResultMessage imageCreate(@RequestBody MultipartFile image){
         try {
-            image.transferTo(new File(IMAGE_PATH + "/" + id  + "/image.jpg"));
-        } catch (InvalidPathException e){
-            File imageDir = new File(IMAGE_PATH  + "/" + id);
-            imageDir.mkdir();
-            try {
-                image.transferTo(new File(IMAGE_PATH  + "/" + id + "/image.jpg"));
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-
+            BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
+            ImageIO.write(bufferedImage, "jpg", new File(IMAGE_PATH + "/" + image.getOriginalFilename()));
         } catch (IOException e2) {
             e2.printStackTrace();
         }
-
-
         return ResultMessageFactory.accept();
     }
 

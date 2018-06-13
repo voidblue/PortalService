@@ -11,11 +11,13 @@ import java.util.Date;
 @Entity
 public class Article {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String author;
     private String title;
     private String text;
     @Column(updatable = false)
     private String timeCreated;
+    private String imageName;
 
 }

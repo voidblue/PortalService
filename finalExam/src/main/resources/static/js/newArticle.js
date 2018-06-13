@@ -1,64 +1,34 @@
-console.log(sessionStorage.getItem("token"));
+console.log(JSON.parse(decodeData(sessionStorage.getItem("token"))).id)
 
-if (sessionStorage.getItem("token") === null) {
-    $("#loginArea").html(
-        '<div id="signUpForm">\
-            <h1 class="loginTitle">로그인</h1>\
-            <input id = "id" type="text" class="loginInput" placeholder="아이디" autofocus required>\
-            <input id = "password" type="password" class="loginInput" placeholder="비밀번호" required>\
-            <button id = "loginSubmit"  class="submitButton">로그인</button>\
-            <a href="signUp.html">\
-            <button id = "signUp" class="submitButton" href="signUp.html">회원가입</button>\
-            </a>\
-            </div>')
-}
-else {
-    console.log(decodeData(sessionStorage.getItem("token")));
-    var jsonValues = JSON.parse(decodeData(sessionStorage.getItem("token")))
-    $("#loginArea").html('<div id="signUpForm">\
-    <img src = "/api/user/image/' + jsonValues["imageName"] + '">\
-    <h3>' + jsonValues["nickname"] + ' 님 환영합니다.</h3>\
-    <a href = "newArticle.html">\
-    <div class = "newArticle submitButton">글쓰기</div>\
-    </a>\
-    <div id = "logout"  class="submitButton">로그아웃</div>')
-}
+$("#newArticleSubmit").click(function() {
 
-
-$("#loginSubmit").click(function() {
         $.ajax({
-            url: './api/auth/login',
-            contentType: 'application/json',
+            url: '/api/article' ,
+            contentType: "application/json",
+            headers : {token:sessionStorage.getItem("token")},
             data:JSON.stringify({
-                id : $("#id").val(),
-                password : $("#password").val()
+                title : $('#title').val(),
+                text : $("#text").val(),
+                author : JSON.parse(decodeData(sessionStorage.getItem("token"))).id,
+                imageName : $("#image").val().split("\\").slice(-1)[0]
             }),
             type: 'post',
             success: function (data) {
-                sessionStorage.setItem("token", data)
-                window.location.reload();
+                console.log(data)
+                $.each(data, function (i, result) {
+                })
             },
-            error:function (data, textStatus, jqXHR) {
-                console.log("click")
-                console.log(data);
-                console.log(textStatus);
-                console.log(jqXHR);
+            error: function (data, textStatus, jqXHR) {
             }
-
         })
+        $("#newArticleForm").attr("action", "api/article/image")
+
+        var fileValue = $("#image").val().split("\\");
+        var fileName = fileValue[fileValue.length - 1];
+
 
     }
-
 )
-
-$("#logout").click(function() {
-    sessionStorage.clear();
-    window.location.reload();
-}
-)
-
-
-
 
 function decodeData(token) {
 

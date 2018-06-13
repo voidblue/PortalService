@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="css/newArticle.css" />
+    <title>리뷰 쓰기</title>
+</head>
+<body>
+<section class="newArticleArea">
+    <!--TODO 토큰 추가-->
+            <div  >제목</div>
+            <input id = "title" type="text"></input>
+    <form id = "newArticleForm" class="form-url" action="#" method="POST" enctype="multipart/form-data">
+        <div >
+            <div >이미지</div>
+            <input id = "image" type="file" name="image" class="img left-space"></input>
+        </div>
+        <div class="text-area flex">
+            <div >내용</div>
+            <textarea id = "text" type="password" ></textarea>
+        </div>
+
+        <div>
+            <div>
+                <button class = "left" id = "newArticleSubmit" type="submit">작성</button>
+                <button class = "right" >취소</button>
+            </div>
+        </div>
+    </form>
+</section>
+
+
+<script type="text/javascript" src="lib/jquery-3.3.1.min.js" charset="utf-8"></script>
+<script type="text/javascript" src="js/newArticle.js" charset="utf-8"></script>
+</body>
+</html>

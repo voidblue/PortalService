@@ -8,8 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.InvalidPathException;
@@ -18,18 +20,13 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/api/user")
 public class UserController {
-    private static final String IMAGE_PATH = System.getProperty("user.dir") + "/src/main/resources/static/api/user";
+    private static final String IMAGE_PATH = System.getProperty("user.dir") + "/out/production/resources/static/api/user/image";
     @Autowired
     UserRepository userRepository;
 
     @GetMapping(value = "/{id}")
-    public Optional<User> get(@PathVariable String id, HttpServletRequest req, HttpServletResponse res){
-        String token = req.getHeader("token");
-        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(id, token, ()->{
-            userRepository.findById(id);
-        });
-        res.setStatus(404);
-        return null;
+    public Optional<User> get(@PathVariable String id){
+        return  userRepository.findById(id);
     }
 
     //TODO 남용하면 업데이트 처럼 동작 할 수 있을 거 같은데 어떻게 구문 하면 좋을지?
@@ -58,33 +55,26 @@ public class UserController {
 //        return ResultMessageFactory.accept();
 //    }
 
-    @PostMapping("/{id}/image.jpg")
-    public ResultMessage imageCreate(@RequestBody MultipartFile image, @PathVariable String id){
+    @PostMapping("/image")
+    public ResultMessage imageCreate(@RequestBody MultipartFile image){
         try {
-            image.transferTo(new File(IMAGE_PATH + "/" + id  + "/image.jpg"));
-        } catch (InvalidPathException e){
-            File imageDir = new File(IMAGE_PATH  + "/" + id);
-            imageDir.mkdir();
-            try {
-                image.transferTo(new File(IMAGE_PATH  + "/" + id + "/image.jpg"));
-            } catch (IOException e1) {
-                e1.printStackTrace();
-            }
-
-        } catch (IOException e2) {
-            e2.printStackTrace();
+            BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
+            ImageIO.write(bufferedImage, "jpg", new File(IMAGE_PATH + "/" + image.getOriginalFilename()));
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
 
         return ResultMessageFactory.accept();
     }
 
-    @PutMapping("/{id}/image.jpg")
+    @PutMapping("/image")
     public ResultMessage update(@RequestBody MultipartFile image, @PathVariable String id, HttpServletRequest req){
         String token = req.getHeader("token");
         ResultMessage resultMessage = AuthContext.askAuthorityAndAct(id, token, ()->{
             try {
-                image.transferTo(new File(IMAGE_PATH + "/" + id +  "/image"));
+                BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
+                ImageIO.write(bufferedImage, "jpg", new File(IMAGE_PATH + "/" + image.getOriginalFilename()));
             } catch (IOException e) {
                 e.printStackTrace();
             }

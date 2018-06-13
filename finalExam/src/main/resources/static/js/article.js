@@ -13,13 +13,13 @@ $(document).ready(function () {
             $("#articleArea").html();
             var articles = ''
             $.each(data, function (i, article) {
-                articles += "<div class = \"article\">\
-                    <div class = \"textbox\" id = \"title\">" + article.title + "</div>\
-                    <div class = \"textbox\" id = \"author\">" + article.author + "</div>\
-                    <div class = \"textbox\" id = \"timeCreated\">" + article.timeCreated + "</div>\
-                    <img src = \"/api/article/" + article.id + "/image.jpg\">\
-                    <div class = \"textbox\" id = \"text\">" + article.text + "</div>\
-                    </div>"
+                articles += '<div class = "article">\
+                    <div class = "textbox" id = "title">' + article.title + '</div>\
+                    <div class = "textbox" id = "author">' + article.author + '</div>\
+                    <div class = "textbox" id = "timeCreated">' + article.timeCreated + '</div>\
+                    <img src = "/api/article/image/' +  article.imageName + '">\
+                    <div class = "textbox" id = "text">' + article.text + '</div>\
+                    </div>'
                 $('#articleArea').val()
             })
             $("#articleArea").html(articles);

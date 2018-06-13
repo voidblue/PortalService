@@ -4,13 +4,16 @@ body {
    color: #333333;
    background: #596778;
 }*/
+img{
+    width: 100%;
+}
+
 
 .login {
     position: absolute;
     top: 10px;
-    bottom : 10px;
+    left: 10px;
     margin: 10px auto;
-    height : 300px;
     width: 280px;
     padding: 33px 25px 29px;
     background: #FFFFFF;
@@ -20,23 +23,23 @@ body {
     box-shadow: 0 1px 5px rgba(0, 0, 0, 0.25);
 }
 
-.login:before,
-.login:after {
-    content: '';
-    position: absolute;
-    bottom: 1px;
-    left: 0;
-    right: 0;
-    height: 10px;
-    background: inherit;
-    border-bottom: 1px solid #D2D2D2;
-    border-radius: 4px;
-}
+/*.login:before,*/
+/*.login:after {*/
+    /*content: '';*/
+    /*position: absolute;*/
+    /*bottom: 1px;*/
+    /*left: 0;*/
+    /*right: 0;*/
+    /*height: 10px;*/
+    /*background: inherit;*/
+    /*border-bottom: 1px solid #D2D2D2;*/
+    /*border-radius: 4px;*/
+/*}*/
 
-.login:after {
-    bottom: 3px;
-    border-color: #DCDCDC;
-}
+/*.login:after {*/
+    /*bottom: 3px;*/
+    /*border-color: #DCDCDC;*/
+/*}*/
 
 .loginTitle {
     margin: -25px -25px 25px;
@@ -107,7 +110,7 @@ a {
 
     position: relative;
     vertical-align: top;
-    width: 100%;
+    width: 280px;
     height: 40px;
     padding: 0;
     font-size: 22px;

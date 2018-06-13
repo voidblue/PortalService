@@ -1,16 +1,15 @@
 package com.voidblue.finalexam.Model;
 
 import lombok.Data;
+import org.hibernate.annotations.GeneratorType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Transient;
+import javax.persistence.*;
 
 @Data
 @Entity
 public class Comment {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String author;
     private Integer article;

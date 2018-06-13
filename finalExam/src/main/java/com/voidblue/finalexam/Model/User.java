@@ -1,5 +1,6 @@
 package com.voidblue.finalexam.Model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import lombok.Data;
 import lombok.ToString;
 import org.springframework.util.LinkedMultiValueMap;
@@ -14,6 +15,8 @@ import java.lang.reflect.Field;
 public class User {
     @Id
     private String id;
+    @JsonIgnore
     private String password;
     private String nickname;
+    private String imageName;
 }

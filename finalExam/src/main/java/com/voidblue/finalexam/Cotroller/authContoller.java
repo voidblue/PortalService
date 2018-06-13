@@ -3,6 +3,8 @@ package com.voidblue.finalexam.Cotroller;
 import com.voidblue.finalexam.Dao.UserRepository;
 import com.voidblue.finalexam.Model.Auth;
 import com.voidblue.finalexam.Model.User;
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.Jws;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,6 +12,8 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.Optional;
 
 @RestController
@@ -29,6 +33,7 @@ public class authContoller {
                         .setSubject("")
                         .claim("id", user.get().getId())
                         .claim("nickname", user.get().getNickname())
+                        .claim("imageName", user.get().getImageName())
                         .signWith(SignatureAlgorithm.HS512, "portalServiceFinalExam")
                         .compact();
             }else{
@@ -37,6 +42,8 @@ public class authContoller {
         }catch (EmptyResultDataAccessException e){
             res.setStatus(500);
         }
+
         return jwtString;
+
     }
 }

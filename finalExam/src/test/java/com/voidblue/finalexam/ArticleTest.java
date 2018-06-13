@@ -18,6 +18,8 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.http.*;
 import org.springframework.test.context.junit4.SpringRunner;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 
 @RunWith(SpringRunner.class)
@@ -63,10 +65,17 @@ public class ArticleTest {
     @Test
     public void create(){
         Article articleForCreate = getArticle();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+        System.out.println(simpleDateFormat.format(new Date()));
+        articleForCreate.setTimeCreated(simpleDateFormat.format(new Date()));
+
         HttpEntity<ResultMessage> entity = new HttpEntity(articleForCreate, httpHeaders);
 
         ResponseEntity<ResultMessage> resultMessage = restTemplate.exchange(PATH , HttpMethod.POST, entity, ResultMessage.class);
+
         Article createdArticle = restTemplate.getForObject(PATH + "/" + articleForCreate.getId(), Article.class);
+
+
 
         System.out.println(resultMessage);
         assertThat(resultMessage.getBody().getResultCode(), is(200));
