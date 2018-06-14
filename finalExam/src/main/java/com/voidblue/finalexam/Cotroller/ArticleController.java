@@ -14,6 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -44,11 +45,11 @@ public class ArticleController {
     }
 
     @PostMapping
-    public ResultMessage create(@RequestBody Article article, HttpServletRequest req){
+    public ResultMessage create(@RequestBody Article article, HttpServletRequest req, HttpServletResponse res){
         String token = req.getHeader("token");
         System.out.println(token);
         System.out.println(article);
-        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, () -> {
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, res,  () -> {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             System.out.println(simpleDateFormat.format(new Date()));
             article.setTimeCreated(simpleDateFormat.format(new Date()));
@@ -58,16 +59,16 @@ public class ArticleController {
     }
 
     @PutMapping
-    public ResultMessage update(@RequestBody Article article, HttpServletRequest req){
+    public ResultMessage update(@RequestBody Article article, HttpServletRequest req, HttpServletResponse res){
         String token = req.getHeader("token");
-        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, () -> {
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token,res,  () -> {
             articleRepository.save(article);
         });
         return  resultMessage;
     }
 
     @DeleteMapping("/{id}")
-    public ResultMessage delete(@PathVariable Integer id, HttpServletRequest req){
+    public ResultMessage delete(@PathVariable Integer id, HttpServletRequest req, HttpServletResponse res){
         String token = req.getHeader("token");
         Optional<Article> optArticle = articleRepository.findById(id);
         Article article;
@@ -75,11 +76,12 @@ public class ArticleController {
         //TODO 옵셔널을 써서 오히려 복잡해졌는데??
         if(optArticle.isPresent()){
             article = optArticle.get();
-            resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, () -> {
+            resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, res, () -> {
                 articleRepository.deleteById(id);
             });
         }else {
             resultMessage = ResultMessageFactory.isEmpty();
+            res.setStatus(404);
         }
 
         return  resultMessage;

@@ -33,10 +33,7 @@ $(document).ready(function () {
 
         },
         error: function (data, textStatus, jqXHR) {
-            console.log("에러");
-            console.log(data)
-            console.log(textStatus)
-            console.log(jqXHR)
+            alert(data.message)
         }
     })
 })
@@ -61,10 +58,7 @@ function  newComment(articleId, textNum){
 
             },
             error: function (data, textStatus, jqXHR) {
-                console.log("에러");
-                console.log(data)
-                console.log(textStatus)
-                console.log(jqXHR)
+                alert(data.message)
             }
         })
     }
@@ -166,10 +160,7 @@ function  showComment(articleNum, i){
             })
         },
         error: function (data, textStatus, jqXHR) {
-            console.log("에러");
-            console.log(data)
-            console.log(textStatus)
-            console.log(jqXHR)
+            alert(data.message)
         }
     })
 }
@@ -190,10 +181,7 @@ function deleteArticle(articleId) {
             window.location.reload()
         },
         error: function (data, textStatus, jqXHR) {
-            console.log("에러");
-            console.log(data)
-            console.log(textStatus)
-            console.log(jqXHR)
+            alert(data.message)
         }
     })
 
@@ -212,10 +200,7 @@ function updateArticle(articleId) {
             console.log(data)
         },
         error: function (data, textStatus, jqXHR) {
-            console.log("에러");
-            console.log(data)
-            console.log(textStatus)
-            console.log(jqXHR)
+            alert(data.message)
         }
     })
 
@@ -234,10 +219,7 @@ function deleteComment(commentId) {
             window.location.reload()
         },
         error: function (data, textStatus, jqXHR) {
-            console.log("에러");
-            console.log(data)
-            console.log(textStatus)
-            console.log(jqXHR)
+            alert(data.message)
         }
     })
 
@@ -256,10 +238,7 @@ function updateComment(commentId) {
             console.log(data)
         },
         error: function (data, textStatus, jqXHR) {
-            console.log("에러");
-            console.log(data)
-            console.log(textStatus)
-            console.log(jqXHR)
+            alert(data.message)
         }
     })
 

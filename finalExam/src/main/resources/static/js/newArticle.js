@@ -1,5 +1,3 @@
-console.log(JSON.parse(decodeData(sessionStorage.getItem("token"))).id)
-
 $("#newArticleSubmit").click(function() {
 
         $.ajax({
@@ -19,6 +17,7 @@ $("#newArticleSubmit").click(function() {
                 })
             },
             error: function (data, textStatus, jqXHR) {
+                console.log(data)
             }
         })
         $("#newArticleForm").attr("action", "api/article/image")

@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -32,16 +33,16 @@ public class ThumbUpController {
     }
 
     @PostMapping
-    public ResultMessage create(@RequestBody ThumbUp thumbUp, HttpServletRequest req){
+    public ResultMessage create(@RequestBody ThumbUp thumbUp, HttpServletRequest req, HttpServletResponse res){
         String token = req.getHeader("token");
-        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(thumbUp.getUser(), token, ()->{thumbUpRepository.save(thumbUp);});
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(thumbUp.getUser(), token, res, ()->{thumbUpRepository.save(thumbUp);});
         return resultMessage;
     }
 
     @PutMapping
-    public ResultMessage update(@RequestBody ThumbUp thumbUp, HttpServletRequest req){
+    public ResultMessage update(@RequestBody ThumbUp thumbUp, HttpServletRequest req, HttpServletResponse res){
         String token = req.getHeader("token");
-        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(thumbUp.getUser(), token, ()->{thumbUpRepository.save(thumbUp);});
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(thumbUp.getUser(), token, res, ()->{thumbUpRepository.save(thumbUp);});
         return resultMessage;
     }
 

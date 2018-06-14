@@ -39,9 +39,9 @@ public class UserController {
     }
 
     @PutMapping
-    public ResultMessage update(@RequestBody User user, HttpServletRequest req){
+    public ResultMessage update(@RequestBody User user, HttpServletRequest req, HttpServletResponse res){
         String token = req.getHeader("token");
-        AuthContext.askAuthorityAndAct(user.getId(), token, ()->{
+        AuthContext.askAuthorityAndAct(user.getId(), token, res, ()->{
             userRepository.save(user);
         });
         return ResultMessageFactory.accept();
@@ -69,9 +69,9 @@ public class UserController {
     }
 
     @PutMapping("/image")
-    public ResultMessage update(@RequestBody MultipartFile image, @PathVariable String id, HttpServletRequest req){
+    public ResultMessage update(@RequestBody MultipartFile image, @PathVariable String id, HttpServletRequest req, HttpServletResponse res){
         String token = req.getHeader("token");
-        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(id, token, ()->{
+        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(id, token, res, ()->{
             try {
                 BufferedImage bufferedImage = ImageIO.read(image.getInputStream());
                 ImageIO.write(bufferedImage, "jpg", new File(IMAGE_PATH + "/" + image.getOriginalFilename()));
