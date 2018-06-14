@@ -1,3 +1,16 @@
+.rightbtn{
+    float: right;
+}
+
+.commentImg{
+    width:100px;
+}
+
+.articleImg{
+    margin: auto;
+    width:500px;
+}
+
 .articleArea {
     position: absolute;
     top:30px;
@@ -88,6 +101,7 @@ input {
 .lt-ie9 .loginInput {
     line-height: 48px;
 }
+
 a {
     text-decoration:none
 }

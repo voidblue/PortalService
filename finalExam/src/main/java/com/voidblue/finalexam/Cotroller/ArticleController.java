@@ -6,6 +6,9 @@ import com.voidblue.finalexam.Model.Article;
 import com.voidblue.finalexam.Utils.ResultMessageFactory;
 import com.voidblue.finalexam.Utils.ResultMessage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Sort;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -14,10 +17,8 @@ import javax.servlet.http.HttpServletRequest;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.InvalidPathException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
 import java.util.Optional;
 
 @RestController
@@ -36,8 +37,10 @@ public class ArticleController {
 
     @GetMapping("/list")
     //TODO 파라미터 및 페이징 추가할것
-    public List<Article> getList(){
-        return articleRepository.findAll();
+    public Page<Article> getList(@RequestParam Integer page){
+        PageRequest request = new PageRequest(page - 1, 5, Sort.Direction.DESC, "id");
+
+        return articleRepository.findAll(request);
     }
 
     @PostMapping
@@ -70,14 +73,13 @@ public class ArticleController {
         Article article;
         ResultMessage resultMessage = null;
         //TODO 옵셔널을 써서 오히려 복잡해졌는데??
-        if(optArticle == null){
-            resultMessage = ResultMessageFactory.isEmpty();
-        }else {
+        if(optArticle.isPresent()){
             article = optArticle.get();
             resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, () -> {
                 articleRepository.deleteById(id);
             });
-
+        }else {
+            resultMessage = ResultMessageFactory.isEmpty();
         }
 
         return  resultMessage;

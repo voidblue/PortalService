@@ -25,7 +25,10 @@ public class CommentController {
     }
 
     @GetMapping("/list")
-    public List<Comment> getList(){
+    public List<Comment> getList(@RequestParam(defaultValue = "-1") Integer article){
+        if(!article.equals("-1")){
+            return commentRepository.findAllByArticle(article);
+        }
         return commentRepository.findAll();
     }
 
@@ -34,9 +37,10 @@ public class CommentController {
         String token = req.getHeader("token");
 
         ResultMessage resultMessage = AuthContext.askAuthorityAndAct(comment.getAuthor(), token, ()->{
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
-            comment.setTimeCreated(simpleDateFormat.format(new Date()));
-            commentRepository.save(comment);
+                SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss.S");
+                comment.setTimeCreated(simpleDateFormat.format(new Date()));
+                commentRepository.save(comment);
+
         });
 
 

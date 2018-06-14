@@ -16,7 +16,7 @@ else {
     console.log(decodeData(sessionStorage.getItem("token")));
     var jsonValues = JSON.parse(decodeData(sessionStorage.getItem("token")))
     $("#loginArea").html('<div id="signUpForm">\
-    <img src = "/api/user/image/' + jsonValues["imageName"] + '">\
+    <img class="userImage" src = "/api/user/image/' + jsonValues["imageName"] + '">\
     <h3>' + jsonValues["nickname"] + ' 님 환영합니다.</h3>\
     <a href = "newArticle.html">\
     <div class = "newArticle submitButton">글쓰기</div>\

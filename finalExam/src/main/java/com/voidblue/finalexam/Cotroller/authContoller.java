@@ -26,7 +26,7 @@ public class authContoller {
         String jwtString = null;
         try{
             Optional<User> user = userRepository.findById(auth.getId());
-            if(user.get().getPassword().equals(auth.getPassword())){
+                if(user.get().getPassword().equals(auth.getPassword())){
                 jwtString = Jwts.builder()
                         .setHeaderParam("typ", "JWT")
                         .setHeaderParam("issueDate", System.currentTimeMillis())

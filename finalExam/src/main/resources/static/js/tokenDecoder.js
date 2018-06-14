@@ -1,35 +1,3 @@
-console.log(JSON.parse(decodeData(sessionStorage.getItem("token"))).id)
-
-$("#newArticleSubmit").click(function() {
-
-        $.ajax({
-            url: '/api/article' ,
-            contentType: "application/json",
-            headers : {token:sessionStorage.getItem("token")},
-            data:JSON.stringify({
-                title : $('#title').val(),
-                text : $("#text").val(),
-                author : JSON.parse(decodeData(sessionStorage.getItem("token"))).id,
-                imageName : $("#image").val().split("\\").slice(-1)[0]
-            }),
-            type: 'post',
-            success: function (data) {
-                console.log(data)
-                $.each(data, function (i, result) {
-                })
-            },
-            error: function (data, textStatus, jqXHR) {
-            }
-        })
-        $("#newArticleForm").attr("action", "api/article/image")
-
-        var fileValue = $("#image").val().split("\\");
-        var fileName = fileValue[fileValue.length - 1];
-
-
-    }
-)
-
 function decodeData(token) {
 
     str = token.split(".")[1];
@@ -88,6 +56,3 @@ function decodeData(token) {
         ((n % 4 == 2) ? String.fromCharCode(c) : "");
     return output;
 }
-
-
-
