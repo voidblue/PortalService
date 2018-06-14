@@ -14,10 +14,11 @@ if (sessionStorage.getItem("token") === null) {
 }
 else {
     console.log(decodeData(sessionStorage.getItem("token")));
+
     var jsonValues = JSON.parse(decodeData(sessionStorage.getItem("token")))
     $("#loginArea").html('<div id="signUpForm">\
-    <img class="userImage" src = "/api/user/image/' + jsonValues["imageName"] + '">\
-    <h3>' + jsonValues["nickname"] + ' 님 환영합니다.</h3>\
+    <h1 class="loginTitle">' + jsonValues["nickname"] + ' 님 환영합니다.</h1>\
+    <img class="userImage center" src = "/api/user/image/' + jsonValues["imageName"] + '">\
     <a href = "newArticle.html">\
     <div class = "newArticle submitButton">글쓰기</div>\
     </a>\
@@ -39,10 +40,7 @@ $("#loginSubmit").click(function() {
                 window.location.reload();
             },
             error:function (data, textStatus, jqXHR) {
-                console.log("click")
-                console.log(data);
-                console.log(textStatus);
-                console.log(jqXHR);
+                alert(data.responseJSON.message)
             }
 
         })

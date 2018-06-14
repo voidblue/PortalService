@@ -1,15 +1,41 @@
+.commentWrapper{
+    overflow: auto;
+    float: left;
+}
+.profile{
+    width: 110px;
+    height: 110px;
+    float: left;
+}
+
+.nickname{
+    width:100px;
+}
+.commentText{
+    float: left;
+    height: 110px;
+    width:400px;
+}
+
 .rightbtn{
     float: right;
 }
 
+.floatPadding{
+    clear:both;
+}
+
 .commentImg{
+    float: left;
     width:100px;
 }
 
 .articleImg{
-    width:500px;
+    max-width:400px;
 }
-
+.center{
+    display: table; margin-left: auto; margin-right: auto;
+}
 
 .newComment{
     width: 500px;

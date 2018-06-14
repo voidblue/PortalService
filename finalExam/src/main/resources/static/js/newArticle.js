@@ -17,7 +17,7 @@ $("#newArticleSubmit").click(function() {
                 })
             },
             error: function (data, textStatus, jqXHR) {
-                console.log(data)
+                alert(data.responseJSON.message)
             }
         })
         $("#newArticleForm").attr("action", "api/article/image")

@@ -26,7 +26,7 @@ import java.util.Optional;
 @RequestMapping("/api/article")
 //TODO 이미지 부분도 처리해야 함
 public class ArticleController {
-    private static final String IMAGE_PATH = System.getProperty("user.dir") + "/src/main/resources/static/api/article/image";
+    private static final String IMAGE_PATH = System.getProperty("user.dir") + "/out/production/resources/static/api/article/image";
 
     @Autowired
     ArticleRepository articleRepository;

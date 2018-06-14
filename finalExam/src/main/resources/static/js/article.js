@@ -15,16 +15,17 @@ $(document).ready(function () {
                     <div class = "textbox" id = "author">' + article.author + '</div>\
                     <div class = "textbox" id = "timeCreated">' + article.timeCreated + '</div>\
                     <button class = "rightbtn" id = "update" onclick = "updateArticle('+article.id+')">수정</button>\
-                    <button class = "rightbtn" id = "delete" onclick = "deleteArticle('+article.id+')">삭제</button>\
-                    <img class="articleImg" src = "/api/article/image/' +  article.imageName + '">\
+                    <button class =     "rightbtn" id = "delete" onclick = "deleteArticle('+article.id+')">삭제</button>\
+                    <div class = "floatPadding"></div>\
+                    <img class="articleImg center" src = "/api/article/image/' +  article.imageName + '">\
                     <div class = "textbox" id = "text">' + article.text + '</div>\
-                    \
                     <div class = "CommentArea">\
                         <input type="textArea" class ="newComment" id = "commentText' + i + '">\
                         <input type="hidden" value="' + article.id + '">\
                         <button class = "rightbtn"  onclick = "newComment('+article.id +', '+ i +')">댓글쓰기</button>\
+                                            <div class = "floatPadding"></div>\
                         <div id = "commentWrapper'+i+'">\
-                            <button class = "centerbtn" onclick = "showComment('+article.id+', '+ i +')">댓글보기</button>\
+                            <button class = "centerbtn center" onclick = "showComment('+article.id+', '+ i +')">댓글보기</button>\
                         </div>\
                     </div>\
                     </div>'
@@ -33,7 +34,7 @@ $(document).ready(function () {
 
         },
         error: function (data, textStatus, jqXHR) {
-            alert(data.message)
+            alert(data.responseJSON.message)
         }
     })
 })
@@ -58,7 +59,7 @@ function  newComment(articleId, textNum){
 
             },
             error: function (data, textStatus, jqXHR) {
-                alert(data.message)
+                alert(data.responseJSON.message)
             }
         })
     }
@@ -147,9 +148,13 @@ function  showComment(articleNum, i){
                         success:function(author) {
                             console.log(author)
                             comments += '<img class ="commentImg" src ="api/user/image/' + author.imageName + '">\
-                            <div> ' + comment.text + '</div>\
+                            <div class="profile">\
+                                <div class="nickname">'+author.nickname+'</div>\
+                                <div class="commentText"> ' + comment.text + '</div>\
+                             </div>\
                             <button class = "rightbtn" id = "update" onclick = "updateComment('+comment.id+')">수정</button>\
-                            <button class = "rightbtn" id = "delete" onclick = "deleteComment('+comment.id+')">삭제</button>'
+                            <button class = "rightbtn" id = "delete" onclick = "deleteComment('+comment.id+')">삭제</button>\
+                            <p class="floatPadding"></p>'
 
                             console.log(comments)
                             $("#commentWrapper" + i).html(comments)
@@ -160,7 +165,7 @@ function  showComment(articleNum, i){
             })
         },
         error: function (data, textStatus, jqXHR) {
-            alert(data.message)
+            alert(data.responseJSON.message)
         }
     })
 }
@@ -178,10 +183,10 @@ function deleteArticle(articleId) {
 
         success: function (data) {
             console.log(data)
-            window.location.reload()
+            // window.location.reload()
         },
         error: function (data, textStatus, jqXHR) {
-            alert(data.message)
+            alert(data.responseJSON.message)
         }
     })
 
@@ -190,20 +195,28 @@ function deleteArticle(articleId) {
 
 
 function updateArticle(articleId) {
-    $.ajax({
-        url: '/api/article',
-        contentType: 'application/json',
-        type: 'delete',
-        headers: {token: sessionStorage.getItem("token")},
+    window.name = "parentForm";
+    // window.open("open할 window", "자식창 이름", "팝업창 옵션");
+    updateArticle = window.open("updateArticle.html",
+        "childForm", "width=570, height=600 , resizable = no, scrollbars = no");
 
+    $.ajax({
+        url: '/api/article/' + articleId,
+        contentType: 'application/json',
+        type: 'get',
         success: function (data) {
-            console.log(data)
+            $(updateArticle.document).find("#title").val(data.title);
+            $(updateArticle.document).find("#text").val(data.text);
+
         },
         error: function (data, textStatus, jqXHR) {
-            alert(data.message)
+            alert(data.responseJSON.message)
         }
     })
 
+    $(updateArticle.document).find("#actionButton").click(function () {
+        updateArticle.close();
+    })
 }
 
 
@@ -219,7 +232,7 @@ function deleteComment(commentId) {
             window.location.reload()
         },
         error: function (data, textStatus, jqXHR) {
-            alert(data.message)
+            alert(data.responseJSON.message)
         }
     })
 
@@ -238,7 +251,7 @@ function updateComment(commentId) {
             console.log(data)
         },
         error: function (data, textStatus, jqXHR) {
-            alert(data.message)
+            alert(data.responseJSON.message)
         }
     })
 
