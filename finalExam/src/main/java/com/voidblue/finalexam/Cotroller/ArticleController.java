@@ -47,8 +47,6 @@ public class ArticleController {
     @PostMapping
     public ResultMessage create(@RequestBody Article article, HttpServletRequest req, HttpServletResponse res){
         String token = req.getHeader("token");
-        System.out.println(token);
-        System.out.println(article);
         ResultMessage resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token, res,  () -> {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
             System.out.println(simpleDateFormat.format(new Date()));

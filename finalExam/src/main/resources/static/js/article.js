@@ -4,15 +4,32 @@ $(document).ready(function () {
         url: '/api/article/list?page=1',
         contentType: 'application/json',
         type: 'get',
+        async : false,
         success: function (data) {
             console.log("성공");
             console.log(data);
             $("#articleArea").html();
+
             var articles = ''
             $.each(data.content, function (i, article) {
+
+                var articleAuthorNickname;
+                $.ajax({
+                    url: '/api/user/'+article.author,
+                    contentType: 'application/json',
+                    type: 'get',
+                    async : false,
+                    success:function(asdf){
+                        articleAuthorNickname = asdf.nickname
+                    },
+                    error:function () {
+                        alert("error")
+                    }
+                })
+
                 articles += '<div class = "article">\
                     <div class = "textbox" id = "title">' + article.title + '</div>\
-                    <div class = "textbox" id = "author">' + article.author + '</div>\
+                    <div class = "textbox" id = "author">' + articleAuthorNickname + '</div>\
                     <div class = "textbox" id = "timeCreated">' + article.timeCreated + '</div>\
                     <button class = "rightbtn" id = "update" onclick = "updateArticle('+article.id+')">수정</button>\
                     <button class =     "rightbtn" id = "delete" onclick = "deleteArticle('+article.id+')">삭제</button>\
@@ -29,6 +46,7 @@ $(document).ready(function () {
                         </div>\
                     </div>\
                     </div>'
+
             })
             $("#articleArea").html(articles);
 
@@ -149,11 +167,11 @@ function  showComment(articleNum, i){
                             console.log(author)
                             comments += '<img class ="commentImg" src ="api/user/image/' + author.imageName + '">\
                             <div class="profile">\
-                                <div class="nickname">'+author.nickname+'</div>\
-                                <div class="commentText"> ' + comment.text + '</div>\
+                                <div id="nickname'+comment.id+'"">'+author.nickname+'</div>\
+                                <div id="comment'+comment.id+'"> ' + comment.text + '</div>\
                              </div>\
-                            <button class = "rightbtn" id = "update" onclick = "updateComment('+comment.id+')">수정</button>\
-                            <button class = "rightbtn" id = "delete" onclick = "deleteComment('+comment.id+')">삭제</button>\
+                            <button class = "rightbtn" id = "update'+comment.id+'" onclick = "updateComment('+comment.id+','+articleNum+')">수정</button>\
+                            <button class = "rightbtn" onclick = "deleteComment('+comment.id+')">삭제</button>\
                             <p class="floatPadding"></p>'
 
                             console.log(comments)
@@ -242,19 +260,37 @@ function deleteComment(commentId) {
 
 
 
-function updateComment(commentId) {
-    $.ajax({
-        url: '/api/comment/' + commentId,
-        contentType: 'application/json',
-        type: 'delete',
-        headers: {token: sessionStorage.getItem("token")},
+function updateComment(commentId, article) {
+    console.log(commentId, article, $("#comment" + commentId).html())
+    if ($("#update" + commentId).html() ===  "수정") {
+        var text = $("#comment" + commentId).html().toString()
+        $("#comment" + commentId).contents().unwrap().wrap( '<input type="text" id="commentText'+commentId+'" value="'+text+'"></input>' );
+        $("#comment" + commentId).html('<input type="text">' + text + '<input>');
+        $("#update" + commentId).html("확인")
 
-        success: function (data) {
-            console.log(data)
-        },
-        error: function (data, textStatus, jqXHR) {
-            alert(data.responseJSON.message)
-        }
-    })
+    }else{
+        console.log($("#commentText" + commentId + ":input").val())
+        $.ajax({
+            url: '/api/comment',
+            contentType: 'application/json',
+            type: 'put',
+            headers: {token: sessionStorage.getItem("token")},
+            data : JSON.stringify({
+                id : commentId,
+                text :  $("#commentText" + commentId).val(),
+                article : article,
+                author :JSON.parse(decodeData(sessionStorage.getItem("token"))).id
+            }),
+            success: function (data) {
+                console.log(data)
+                window.location.reload()
+            },
+            error: function (data, textStatus, jqXHR) {
+                // alert(data.responseJSON.message)
+                alert(textStatus)
+            }
+
+        })
+    }
 
 }
