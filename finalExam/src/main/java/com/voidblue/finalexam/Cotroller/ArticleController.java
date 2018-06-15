@@ -61,9 +61,15 @@ public class ArticleController {
     @PutMapping
     public ResultMessage update(@RequestBody Article article, HttpServletRequest req, HttpServletResponse res){
         String token = req.getHeader("token");
-        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(article.getAuthor(), token,res,  () -> {
-            articleRepository.save(article);
-        });
+        ResultMessage resultMessage = null;
+        Optional<Article> targetArticle = articleRepository.findById(article.getId());
+        if(targetArticle.isPresent()) {
+             resultMessage = AuthContext.askAuthorityAndAct(targetArticle.get().getAuthor(), token, res, () -> {
+                articleRepository.save(article);
+            });
+        }else{
+            ResultMessageFactory.isEmpty();
+        }
         return  resultMessage;
     }
 

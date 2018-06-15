@@ -51,10 +51,15 @@ public class CommentController {
     @PutMapping
     public ResultMessage update(@RequestBody Comment comment, HttpServletRequest req, HttpServletResponse res){
         String token  = req.getHeader("token");
-        commentRepository.save(comment);
-        ResultMessage resultMessage = AuthContext.askAuthorityAndAct(comment.getAuthor(), token, res, ()->{
-            commentRepository.save(comment);
-        });
+        ResultMessage resultMessage = null;
+        Optional<Comment> targetArticle = commentRepository.findById(comment.getId());
+        if(targetArticle.isPresent()) {
+            resultMessage = AuthContext.askAuthorityAndAct(targetArticle.get().getAuthor(), token, res, () -> {
+                commentRepository.save(comment);
+            });
+        }else{
+            ResultMessageFactory.isEmpty();
+        }
         return resultMessage;
     }
 

@@ -197,26 +197,28 @@ function deleteArticle(articleId) {
 function updateArticle(articleId) {
     window.name = "parentForm";
     // window.open("open할 window", "자식창 이름", "팝업창 옵션");
-    updateArticle = window.open("updateArticle.html",
-        "childForm", "width=570, height=600 , resizable = no, scrollbars = no");
+    if(sessionStorage.getItem("token") != null) {
+        updateArticle = window.open("updateArticle.html",
+            "childForm", "width=570, height=600 , resizable = no, scrollbars = no");
+        $.ajax({
+            url: '/api/article/' + articleId,
+            contentType: 'application/json',
+            type: 'get',
+            success: function (data) {
 
-    $.ajax({
-        url: '/api/article/' + articleId,
-        contentType: 'application/json',
-        type: 'get',
-        success: function (data) {
-            $(updateArticle.document).find("#title").val(data.title);
-            $(updateArticle.document).find("#text").val(data.text);
+                updateArticle.articleId = articleId
+                $(updateArticle.document).find("#title").val(data.title);
+                $(updateArticle.document).find("#text").val(data.text);
+                $(updateArticle.document).find("#image").attr("value",data.imageName);
+            },
+            error: function (data, textStatus, jqXHR) {
+                alert(data.responseJSON.message)
+            }
+        })
+    }else{
+        alert("로그인을 해주세요")
+    }
 
-        },
-        error: function (data, textStatus, jqXHR) {
-            alert(data.responseJSON.message)
-        }
-    })
-
-    $(updateArticle.document).find("#actionButton").click(function () {
-        updateArticle.close();
-    })
 }
 
 
