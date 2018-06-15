@@ -31,8 +31,8 @@ $(document).ready(function () {
                     <div class = "textbox" id = "title">' + article.title + '</div>\
                     <div class = "textbox" id = "author">' + articleAuthorNickname + '</div>\
                     <div class = "textbox" id = "timeCreated">' + article.timeCreated + '</div>\
-                    <button class = "rightbtn" id = "update" onclick = "updateArticle('+article.id+')">수정</button>\
                     <button class =     "rightbtn" id = "delete" onclick = "deleteArticle('+article.id+')">삭제</button>\
+                    <button class = "rightbtn" id = "update" onclick = "updateArticle('+article.id+')">수정</button>\
                     <div class = "floatPadding"></div>\
                     <img class="articleImg center" src = "/api/article/image/' +  article.imageName + '">\
                     <div class = "textbox" id = "text">' + article.text + '</div>\
@@ -170,9 +170,9 @@ function  showComment(articleNum, i){
                                 <div id="nickname'+comment.id+'"">'+author.nickname+'</div>\
                                 <div id="comment'+comment.id+'"> ' + comment.text + '</div>\
                              </div>\
-                            <button class = "rightbtn" id = "update'+comment.id+'" onclick = "updateComment('+comment.id+','+articleNum+')">수정</button>\
                             <button class = "rightbtn" onclick = "deleteComment('+comment.id+')">삭제</button>\
-                            <p class="floatPadding"></p>'
+                            <button class = "rightbtn" id = "update'+comment.id+'" onclick = "updateComment('+comment.id+','+articleNum+')">수정</button>\
+                            <p class="floatPadding"></p>';
 
                             console.log(comments)
                             $("#commentWrapper" + i).html(comments)
